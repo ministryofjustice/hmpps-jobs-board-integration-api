@@ -11,7 +11,7 @@ The **Match Jobs and Manage Applications** - Jobs Board Integration service is c
 * The high level design on Confluence: [Match Jobs & Manage Applications - HLD](https://dsdmoj.atlassian.net/wiki/x/34NiJgE)
 
 ## Team
-This integration service is developed and supported by `Education Skills & Work` team. They can be contacted via `education-skills-work-employment-dev` on Slack.
+This integration service is developed and supported by `Education Skills & Work` team. They can be contacted via `#education-skills-work-employment-dev` on Slack.
 
 ## Healthiness
 The integration service has a `/health` endpoint which indicates the service is up and running.
