@@ -14,6 +14,8 @@ generic-service:
     # TODO: This should be replaced by a call to a different service, or removed
     EXAMPLE_API_URL: "https://jobs-board-integration-api-preprod.hmpps.service.justice.gov.uk"
 
+  serviceAccountName: education-skills-work-employment-preprod
+
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
