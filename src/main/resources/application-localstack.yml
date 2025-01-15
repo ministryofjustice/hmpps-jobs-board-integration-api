@@ -1,0 +1,5 @@
+hmpps.sqs:
+  provider: localstack
+  queues:
+    integrationqueue:
+      queueName: hmpps_jobs_board_integration_queue
