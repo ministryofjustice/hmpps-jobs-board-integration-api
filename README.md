@@ -21,7 +21,10 @@ The integration service has a `/health` endpoint which indicates the service is 
 ## Running the application locally
 
 * Run with the Spring profile `dev` on local
-  * Set active profile via this environmental variable `spring.profiles.active=dev`
+  * Set active profile via this environmental variable `spring.profiles.active=dev` or `SPRING_PROFILES_ACTIVE=dev`
+* Run with the Spring profile `local` group on local
+  * Set active profile to `local`: `spring.profiles.active=local` or `SPRING_PROFILES_ACTIVE=local`
+  * The `local` group will utilise `localstack` for Integration features with message queue (`SQS`)
 * API Spec:
   * Goto `http://localhost:8080/swagger-ui/index.html` to explore the OpenAPI specifications
 * Checking endpoints
@@ -30,7 +33,7 @@ The integration service has a `/health` endpoint which indicates the service is 
 ### Running with Docker
 
 ```bash
-docker compose pull && docker compose up
+docker compose pull && docker compose up -d
 ```
 
 will build the application and run it and HMPPS Auth within a local docker instance.
@@ -38,8 +41,11 @@ will build the application and run it and HMPPS Auth within a local docker insta
 ### Running the application in Intellij
 
 ```bash
-docker compose pull && docker compose up --scale hmpps-jobs-board-integration-api=0
+docker compose pull && docker compose up --scale hmpps-jobs-board-integration-api=0 -d
 ```
 
-will just start a docker instance of HMPPS Auth. The application should then be started with a `dev` active profile
+will just start a docker instance of HMPPS Auth and `localstack`. The application should then be started with a `dev` or `local` active profile
 in Intellij.
+* supply required env var, e.g.
+  * `spring.profiles.active`=`dev`
+  * `SPRING_PROFILES_ACTIVE`=`local`

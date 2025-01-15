@@ -35,6 +35,11 @@ spring:
             authorization-grant-type: client_credentials
             scope: read
 
+  profiles:
+    group:
+      local:
+        - "dev"
+        - "localstack"
 server:
   port: 8080
   servlet:
