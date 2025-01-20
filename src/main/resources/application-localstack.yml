@@ -1,3 +1,6 @@
+api.integration:
+  enabled: true
+
 hmpps.sqs:
   provider: localstack
   queues:

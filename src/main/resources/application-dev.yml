@@ -8,3 +8,6 @@ example-api:
   client:
     id: "example-api-client"
     secret: "example-api-client-secret"
+
+api.integration:
+  enabled: false
