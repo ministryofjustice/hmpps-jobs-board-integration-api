@@ -34,8 +34,9 @@ testing {
         kotlin.target.compilations { named("integrationTest") { associateWith(getByName("main")) } }
         implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.1.1")
         implementation("org.wiremock:wiremock-standalone:3.9.2")
-        implementation("io.swagger.parser.v3:swagger-parser:2.1.24") {
+        implementation("io.swagger.parser.v3:swagger-parser:2.1.25") {
           exclude(group = "io.swagger.core.v3")
+          exclude(group = "io.swagger.parser.v3", module = "swagger-parser-safe-url-resolver")
         }
       }
 
