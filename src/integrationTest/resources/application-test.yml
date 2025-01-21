@@ -15,3 +15,9 @@ example-api:
   client:
     id: "example-api-client"
     secret: "example-api-client-secret"
+
+hmpps.sqs:
+  provider: localstack
+  queues:
+    integrationqueue:
+      queueName: hmpps_jobs_board_integration_queue

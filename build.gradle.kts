@@ -15,6 +15,8 @@ dependencies {
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.2.2")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
+
+  testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
 
 kotlin {
@@ -38,6 +40,8 @@ testing {
           exclude(group = "io.swagger.core.v3")
           exclude(group = "io.swagger.parser.v3", module = "swagger-parser-safe-url-resolver")
         }
+        implementation("org.springframework.boot:spring-boot-testcontainers")
+        implementation("org.testcontainers:localstack")
       }
 
       targets {
