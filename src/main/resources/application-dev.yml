@@ -9,5 +9,9 @@ example-api:
     id: "example-api-client"
     secret: "example-api-client-secret"
 
-api.integration:
-  enabled: false
+api:
+  base.url:
+    jobsboard: "https://jobs-board-api-dev.hmpps.service.justice.gov.uk"
+
+  integration:
+    enabled: false

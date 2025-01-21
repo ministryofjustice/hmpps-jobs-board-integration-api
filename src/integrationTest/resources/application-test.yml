@@ -21,3 +21,13 @@ hmpps.sqs:
   queues:
     integrationqueue:
       queueName: hmpps_jobs_board_integration_queue
+
+api:
+  base.url:
+    jobsboard: "http://localhost:8092"
+  client:
+    id: "api-client"
+    secret: "api-client-secret"
+
+  integration:
+    enabled: true

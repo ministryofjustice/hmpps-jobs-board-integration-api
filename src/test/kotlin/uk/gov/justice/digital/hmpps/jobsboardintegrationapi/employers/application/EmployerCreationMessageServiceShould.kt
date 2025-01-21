@@ -17,12 +17,20 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEvent
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEventType
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerMother.sainsburys
+import kotlin.test.assertFailsWith
 
 @ExtendWith(MockitoExtension::class)
 class EmployerCreationMessageServiceShould : EmployerMessageServiceTestCase() {
 
   @InjectMocks
   private lateinit var creationService: EmployerCreationMessageService
+
+  @BeforeEach
+  internal fun setUp() {
+    whenever(mockedObjectMapper.readValue(anyString(), eq(EmployerEvent::class.java))).thenAnswer {
+      objectMapper.readValue(it.arguments[0] as String, EmployerEvent::class.java)
+    }
+  }
 
   @Nested
   @DisplayName("Given a new employer")
@@ -31,9 +39,6 @@ class EmployerCreationMessageServiceShould : EmployerMessageServiceTestCase() {
 
     @BeforeEach
     internal fun setUp() {
-      whenever(mockedObjectMapper.readValue(anyString(), eq(EmployerEvent::class.java))).thenAnswer {
-        objectMapper.readValue(it.arguments[0] as String, EmployerEvent::class.java)
-      }
       whenever(employerRetriever.retrieve(employer.id)).thenReturn(employer)
     }
 
@@ -54,6 +59,20 @@ class EmployerCreationMessageServiceShould : EmployerMessageServiceTestCase() {
         assertEquals(employer, captor.firstValue)
       }
     }
+  }
+
+  @Test
+  fun `receive and hit error handling event, with invalid employer ID`() {
+    val employerId = randomUUID()
+    val employerEvent = employerCreationEvent(employerId)
+    val errorCause = IllegalArgumentException("Employer id=$employerId not found")
+    whenever(employerRetriever.retrieve(anyString())).thenThrow(errorCause)
+
+    val exception = assertFailsWith<Exception> {
+      creationService.handleMessage(employerEvent.toIntegrationEvent(), employerEvent.messageAttributes())
+    }
+    assertEquals("Error at employer creation event: eventId=${employerEvent.eventId}", exception.message)
+    assertEquals(errorCause, exception.cause)
   }
 
   private fun employerCreationEvent(employerId: String) = EmployerEvent(
