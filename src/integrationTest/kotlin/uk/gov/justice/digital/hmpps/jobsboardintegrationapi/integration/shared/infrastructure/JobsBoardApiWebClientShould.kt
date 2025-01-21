@@ -17,8 +17,8 @@ class JobsBoardApiWebClientShould : IntegrationTestBase() {
   private lateinit var jobsBoardApiWebClient: JobsBoardApiWebClient
 
   @Nested
-  @DisplayName("JobsBoard `GET` /employers")
-  inner class EmployersGetEndpoint {
+  @DisplayName("JobsBoard `GET` /employers/{id}")
+  inner class EmployersGetDetailsEndpoint {
     @Test
     fun `return employer details, given valid employer ID`() {
       val employer = sainsburys.copy(createdAt = timeProvider.nowAsInstant())
