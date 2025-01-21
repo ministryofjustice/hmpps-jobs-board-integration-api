@@ -13,6 +13,7 @@ import java.time.Duration
 class WebClientConfiguration(
   @Value("\${example-api.url}") val exampleApiBaseUri: String,
   @Value("\${hmpps-auth.url}") val hmppsAuthBaseUri: String,
+  @Value("\${api.base.url.jobsboard}") val jobsboardApiBaseUri: String,
   @Value("\${api.health-timeout:2s}") val healthTimeout: Duration,
   @Value("\${api.timeout:20s}") val timeout: Duration,
 ) {
@@ -29,4 +30,8 @@ class WebClientConfiguration(
   @Bean
   fun exampleApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager, builder: WebClient.Builder): WebClient =
     builder.authorisedWebClient(authorizedClientManager, registrationId = "example-api", url = exampleApiBaseUri, timeout)
+
+  @Bean("jobsBoardWebClient")
+  fun jobsBoardApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager, builder: WebClient.Builder): WebClient =
+    builder.authorisedWebClient(authorizedClientManager, registrationId = "hmpps-jobs-board-api", url = jobsboardApiBaseUri, timeout)
 }

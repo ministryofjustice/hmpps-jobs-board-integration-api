@@ -56,8 +56,12 @@ class EmployerCreationMessageService(
 
   override fun handleEvent(employerEvent: EmployerEvent) {
     log.info("handle employer creation event; eventId={}", employerEvent.eventId)
-    retriever.retrieve(employerEvent.employerId).also { employer ->
-      registrar.registerCreation(employer)
+    try {
+      retriever.retrieve(employerEvent.employerId).also { employer ->
+        registrar.registerCreation(employer)
+      }
+    } catch (e: Exception) {
+      throw Exception("Error at employer creation event: eventId=${employerEvent.eventId}", e)
     }
   }
 }

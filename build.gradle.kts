@@ -40,6 +40,7 @@ testing {
           exclude(group = "io.swagger.core.v3")
           exclude(group = "io.swagger.parser.v3", module = "swagger-parser-safe-url-resolver")
         }
+        implementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
         implementation("org.springframework.boot:spring-boot-testcontainers")
         implementation("org.testcontainers:localstack")
       }
