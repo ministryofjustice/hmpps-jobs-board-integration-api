@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.HmppsAuthApiExtension
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.JobsBoardApiExtension
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.MNJobBoardApiExtension
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application.DefaultTimeProvider
 import uk.gov.justice.hmpps.test.kotlin.auth.JwtAuthorisationHelper
 import java.time.Instant
@@ -31,6 +32,7 @@ import java.util.*
   HmppsAuthApiExtension::class,
   ExampleApiExtension::class,
   JobsBoardApiExtension::class,
+  MNJobBoardApiExtension::class,
   MockitoExtension::class,
 )
 @SpringBootTest(webEnvironment = RANDOM_PORT)

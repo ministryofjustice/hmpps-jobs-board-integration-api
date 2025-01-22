@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain
 
-object EmployerMother {
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNEmployer
+
+object EmployerObjects {
   val tesco = Employer(
     id = "89de6c84-3372-4546-bbc1-9d1dc9ceb354",
     name = "Tesco",
@@ -41,3 +43,22 @@ object EmployerMother {
     status = "SILVER",
   )
 }
+
+internal fun Employer.mnEmployer() = MNEmployer(
+  employerName = name,
+  employerBio = description,
+  sectorId = sectorIdMap[sector]!!,
+  partnerId = statusPartnerIdMap[status]!!,
+)
+
+private val sectorIdMap = mapOf(
+  "CONSTRUCTION" to 6,
+  "LOGISTICS" to 8,
+  "RETAIL" to 7,
+)
+
+private val statusPartnerIdMap = mapOf(
+  "SILVER" to 3,
+  "GOLD" to 2,
+  "KEY_PARTNER" to 1,
+)

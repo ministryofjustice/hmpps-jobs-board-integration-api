@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain
 
-object EmployerMother {
+object EmployerObjects {
   val tesco = Employer(
     id = "89de6c84-3372-4546-bbc1-9d1dc9ceb354",
     name = "Tesco",

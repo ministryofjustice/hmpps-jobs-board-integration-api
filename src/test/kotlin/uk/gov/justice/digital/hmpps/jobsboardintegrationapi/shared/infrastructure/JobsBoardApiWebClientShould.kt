@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
-import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerMother.sainsburys
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.sainsburys
 
 @ExtendWith(MockitoExtension::class)
 class JobsBoardApiWebClientShould : JobsBoardApiWebClientTestBase() {

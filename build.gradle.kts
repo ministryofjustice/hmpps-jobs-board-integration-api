@@ -45,6 +45,7 @@ testing {
           implementation("org.apache.commons:commons-compress:1.27.1")
         }
         implementation("org.testcontainers:localstack")
+        implementation("org.jetbrains.kotlin:kotlin-test-junit5")
       }
 
       targets {

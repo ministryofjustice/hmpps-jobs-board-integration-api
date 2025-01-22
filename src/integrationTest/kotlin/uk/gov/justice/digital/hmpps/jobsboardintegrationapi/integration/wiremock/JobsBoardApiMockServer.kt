@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremoc
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.containing
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 import org.junit.jupiter.api.extension.AfterAllCallback
@@ -16,6 +17,7 @@ class JobsBoardApiMockServer : WireMockServer(8092) {
   fun stubRetrieveEmployer(employer: Employer) {
     stubFor(
       get(urlPathMatching(retrieveEmployerPathRegex))
+        .withHeader("Authorization", containing("Bearer"))
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")

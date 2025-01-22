@@ -25,9 +25,13 @@ hmpps.sqs:
 api:
   base.url:
     jobsboard: "http://localhost:8092"
+    mnjobboard: "http://localhost:8093"
   client:
     id: "api-client"
     secret: "api-client-secret"
 
   integration:
     enabled: true
+
+mn.jobboard:
+  api.token: "mn-api-bearer-token"
