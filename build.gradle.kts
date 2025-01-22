@@ -41,7 +41,9 @@ testing {
           exclude(group = "io.swagger.parser.v3", module = "swagger-parser-safe-url-resolver")
         }
         implementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
-        implementation("org.springframework.boot:spring-boot-testcontainers")
+        implementation("org.springframework.boot:spring-boot-testcontainers") {
+          implementation("org.apache.commons:commons-compress:1.27.1")
+        }
         implementation("org.testcontainers:localstack")
       }
 
