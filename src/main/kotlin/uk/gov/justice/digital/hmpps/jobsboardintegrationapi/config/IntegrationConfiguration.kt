@@ -32,6 +32,5 @@ class IntegrationConfiguration {
   @Bean
   fun integrationMessageListener(
     @Qualifier("integrationMessageService") integrationMessageService: IntegrationMessageService,
-    objectMapper: ObjectMapper,
-  ) = IntegrationMessageListener(integrationMessageService, objectMapper)
+  ) = IntegrationMessageListener(integrationMessageService)
 }

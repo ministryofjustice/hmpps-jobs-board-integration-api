@@ -21,18 +21,19 @@ class IntegrationMessageServiceFacade(
 
   override fun handleMessage(integrationEvent: IntegrationEvent, messageAttributes: MessageAttributes) {
     val eventId = integrationEvent.eventId
-    val eventType = messageAttributes.eventType
-    log.info("received event: id=$eventId, type=$eventType")
-    log.trace("received event: {}, {}", integrationEvent, messageAttributes)
+    val eventType = integrationEvent.eventType
+    val messageId = messageAttributes?.messageId
+    log.info("received event: messageId=$messageId, eventId=$eventId, eventType=$eventType")
+    log.trace("received event: {}", integrationEvent)
 
-    messageAttributes.eventType?.also { eventTypeAttr ->
+    integrationEvent.eventType?.also { eventTypeAttr ->
       serviceMap[eventTypeAttr]?.also { service ->
         service.handleMessage(integrationEvent, messageAttributes)
       } ?: run {
-        logAndThrowArgumentError("MessageService not found for Event type=$eventType, eventId=$eventId")
+        logAndThrowArgumentError("MessageService not found for Event type=$eventType, eventId=$eventId, messageId=$messageId")
       }
     } ?: run {
-      logAndThrowArgumentError("Missing event type eventId=$eventId")
+      logAndThrowArgumentError("Missing event type eventId=$eventId, messageId=$messageId")
     }
   }
 
