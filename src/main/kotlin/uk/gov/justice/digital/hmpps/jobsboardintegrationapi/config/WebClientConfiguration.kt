@@ -31,6 +31,7 @@ class WebClientConfiguration(
   fun exampleApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager, builder: WebClient.Builder): WebClient =
     builder.authorisedWebClient(authorizedClientManager, registrationId = "example-api", url = exampleApiBaseUri, timeout)
 
+  @ConditionalOnIntegrationEnabled
   @Bean("jobsBoardWebClient")
   fun jobsBoardApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager, builder: WebClient.Builder): WebClient =
     builder.authorisedWebClient(authorizedClientManager, registrationId = "hmpps-jobs-board-api", url = jobsboardApiBaseUri, timeout)

@@ -8,10 +8,12 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.config.ConditionalOnIntegrationEnabled
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Employer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.JobsBoardApiClient
 import java.time.Instant
 
+@ConditionalOnIntegrationEnabled
 @Service
 class JobsBoardApiWebClient(
   @Qualifier("jobsBoardWebClient") private val jobsBoardWebClient: WebClient,

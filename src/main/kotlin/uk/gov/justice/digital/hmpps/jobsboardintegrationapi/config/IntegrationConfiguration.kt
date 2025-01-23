@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.application.EmployerCreationMessageService
@@ -13,7 +12,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.Integr
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.IntegrationMessageListener
 
 @Configuration
-@ConditionalOnProperty("api.integration.enabled", havingValue = "true")
+@ConditionalOnIntegrationEnabled
 class IntegrationConfiguration {
   @Bean
   @Qualifier("integrationServiceMap")
