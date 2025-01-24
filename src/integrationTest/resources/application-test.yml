@@ -5,6 +5,15 @@ management.endpoint:
   health.cache.time-to-live: 0
   info.cache.time-to-live: 0
 
+spring:
+  jpa:
+    show-sql: true
+  datasource:
+    url: 'jdbc:postgresql://${DATABASE_ENDPOINT}/${DATABASE_NAME}?sslmode=disable&autosave=conservative'
+  flyway:
+    baseline-on-migrate: true
+    clean-disabled: false
+
 hmpps-auth:
   url: "http://localhost:8090/auth"
 

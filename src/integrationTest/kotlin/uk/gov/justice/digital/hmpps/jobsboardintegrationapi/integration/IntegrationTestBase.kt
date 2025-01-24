@@ -15,6 +15,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.testcontainers.LocalStackContainer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.testcontainers.LocalStackContainer.setLocalStackProperties
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.testcontainers.PostgresContainer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.ExampleApiExtension
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.ExampleApiExtension.Companion.exampleApi
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.HmppsAuthApiExtension
@@ -54,10 +55,20 @@ abstract class IntegrationTestBase {
 
   companion object {
     private val localStackContainer by lazy { LocalStackContainer.instance }
+    private val postgresContainer = PostgresContainer.flywayContainer
 
     @JvmStatic
     @DynamicPropertySource
     fun configureTestContainers(registry: DynamicPropertyRegistry) {
+      postgresContainer?.run {
+        registry.add("spring.datasource.url", postgresContainer::getJdbcUrl)
+        registry.add("spring.datasource.username", postgresContainer::getUsername)
+        registry.add("spring.datasource.password", postgresContainer::getPassword)
+        registry.add("spring.flyway.url", postgresContainer::getJdbcUrl)
+        registry.add("spring.flyway.user", postgresContainer::getUsername)
+        registry.add("spring.flyway.password", postgresContainer::getPassword)
+      }
+
       localStackContainer?.also { setLocalStackProperties(it, registry) }
     }
   }

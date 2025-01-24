@@ -16,3 +16,12 @@ api:
 
   integration:
     enabled: false
+
+spring:
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/job-board-intg'
+    username: 'job-board-intg'
+    password: 'job-board-intg'
+  flyway:
+    user: 'job-board-intg'
+    password: 'job-board-intg'
