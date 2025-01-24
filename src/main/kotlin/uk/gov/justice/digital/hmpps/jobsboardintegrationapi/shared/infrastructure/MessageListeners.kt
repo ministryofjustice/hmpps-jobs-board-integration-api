@@ -2,9 +2,7 @@ package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructu
 
 import io.awspring.cloud.sqs.annotation.SqsListener
 import org.slf4j.LoggerFactory
-import org.springframework.messaging.MessageHeaders
 import org.springframework.messaging.handler.annotation.Header
-import org.springframework.messaging.handler.annotation.Headers
 import org.springframework.messaging.handler.annotation.MessageMapping
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.IntegrationEvent
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.IntegrationMessageService
@@ -24,13 +22,18 @@ class IntegrationMessageListener(
   @SqsListener("integrationqueue", factory = "hmppsQueueContainerFactoryProxy")
   fun processMessage(
     message: String,
-    @Header(ATTRIBUTE_EVENT_TYPE) eventType: String,
-    @Header(ATTRIBUTE_ID) messageId: String,
-    @Headers headers: MessageHeaders,
+    @Header(ATTRIBUTE_EVENT_TYPE) eventType: String?,
+    @Header(ATTRIBUTE_EVENT_ID) eventId: String?,
+    @Header(ATTRIBUTE_ID) messageId: String?,
   ) {
-    val messageAttributes = MessageAttributes(headers)
-    val eventId = messageAttributes.eventId
     log.info("processMessage()|Processing message:messageId=$messageId, eventType=$eventType, eventId=$eventId")
+    val messageAttributes = MessageAttributes().also { attributes ->
+      mapOf(
+        ATTRIBUTE_EVENT_TYPE to eventType,
+        ATTRIBUTE_EVENT_ID to eventId,
+        ATTRIBUTE_ID to messageId,
+      ).filterValues { it != null }.let { attributes.putAll(it) }
+    }
     val event = IntegrationEvent(
       eventType = eventType,
       message = message,
