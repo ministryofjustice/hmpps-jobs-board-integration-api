@@ -14,6 +14,7 @@ generic-service:
     # TODO: This should be replaced by a call to a different service, or removed
     EXAMPLE_API_URL: "https://jobs-board-integration-api-preprod.hmpps.service.justice.gov.uk"
     API_BASE_URL_JOBSBOARD: "https://jobs-board-api-preprod.hmpps.service.justice.gov.uk"
+    API_BASE_URL_MNJOBBOARD: "https://preprodservices.sequation.net/sequation-job-api"   # URL to be confirmed
 
   serviceAccountName: education-skills-work-employment-preprod
 

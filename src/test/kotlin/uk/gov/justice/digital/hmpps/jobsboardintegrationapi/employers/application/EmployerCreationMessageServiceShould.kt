@@ -16,7 +16,7 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Employer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEvent
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEventType
-import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerMother.sainsburys
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.sainsburys
 import kotlin.test.assertFailsWith
 
 @ExtendWith(MockitoExtension::class)
