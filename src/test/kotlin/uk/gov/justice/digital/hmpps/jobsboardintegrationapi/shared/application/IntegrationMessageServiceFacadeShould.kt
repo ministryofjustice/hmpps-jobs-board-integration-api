@@ -16,7 +16,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Qualifier
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.IntegrationEvent
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.IntegrationMessageService
-import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.EventType
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MessageAttributes
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -32,13 +31,13 @@ class IntegrationMessageServiceFacadeShould : UnitTestBase() {
 
   @Test
   fun `throw exception, when missing event type`() {
-    val integrationEvent = dummyIntegrationEvent()
+    val integrationEvent = dummyIntegrationEvent().copy(eventType = null)
     val messageAttributes = MessageAttributes()
     val exception = assertFailsWith<IllegalArgumentException> {
       serviceFacade.handleMessage(integrationEvent, messageAttributes)
     }
 
-    val expectedError = "Missing event type eventId=${integrationEvent.eventId}"
+    val expectedError = "Missing event type eventId=${integrationEvent.eventId}, messageId=null"
     assertEquals(expectedError, exception.message)
   }
 
@@ -54,13 +53,13 @@ class IntegrationMessageServiceFacadeShould : UnitTestBase() {
     @Test
     fun `throw exception, when message received but no service to handle`() {
       val integrationEvent = dummyIntegrationEvent()
-      val messageAttributes = MessageAttributes(dummyEventType())
+      val messageAttributes = MessageAttributes(integrationEvent.eventType!!)
       val exception = assertFailsWith<IllegalArgumentException> {
         serviceFacade.handleMessage(integrationEvent, messageAttributes)
       }
 
       val expectedError =
-        "MessageService not found for Event type=${messageAttributes.eventType}, eventId=${integrationEvent.eventId}"
+        "MessageService not found for Event type=${integrationEvent.eventType}, eventId=${integrationEvent.eventId}, messageId=null"
       assertEquals(expectedError, exception.message)
     }
   }
@@ -93,14 +92,13 @@ class IntegrationMessageServiceFacadeShould : UnitTestBase() {
     }
   }
 
-  private fun integrationEvent(eventType: String, content: String = "") = IntegrationEvent(
+  private fun integrationEvent(eventType: String, content: String? = null) = IntegrationEvent(
     eventId = randomUUID(),
     eventType = eventType,
-    timestamp = defaultCurrentTime,
-    content = content,
+    message = content,
   )
 
-  private fun dummyEventType() = EventType("mjma-jobs-board-dummy-created")
+  private fun dummyEventType() = "mjma-jobs-board-dummy-created"
 
-  private fun dummyIntegrationEvent() = integrationEvent("DummyCreated")
+  private fun dummyIntegrationEvent() = integrationEvent(dummyEventType())
 }

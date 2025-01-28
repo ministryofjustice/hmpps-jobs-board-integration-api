@@ -26,22 +26,22 @@ abstract class EmployerMessageService(
   }
 
   override fun handleMessage(integrationEvent: IntegrationEvent, messageAttributes: MessageAttributes) {
-    log.info("handle message eventId=${integrationEvent.eventId} eventType=${messageAttributes.eventType}")
+    log.info("handle message eventId=${integrationEvent.eventId}, eventType=${messageAttributes.eventType}, messageId=${messageAttributes.messageId}")
     messageAttributes.eventType?.also {
-      log.trace("handle message. integrationEvent={}", integrationEvent)
+      log.trace("handle message. integrationEvent={}, messageAttributes={}", integrationEvent, messageAttributes)
       if (!eventTypeTypes.contains(it)) {
-        throw IllegalArgumentException("Unexpected event type=$it , with eventId=${integrationEvent.eventId}")
+        throw IllegalArgumentException("Unexpected event type=$it , with eventId=${integrationEvent.eventId}, messageId=${messageAttributes.messageId}")
       }
       handleEvent(integrationEvent.toEmployerEvent())
     } ?: run {
-      throw IllegalArgumentException("Missing event type eventId=${integrationEvent.eventId}")
+      throw IllegalArgumentException("Missing event type eventId=${integrationEvent.eventId}, messageId=${messageAttributes.messageId}")
     }
   }
 
   protected abstract fun handleEvent(employerEvent: EmployerEvent)
 
   private fun IntegrationEvent.toEmployerEvent(): EmployerEvent =
-    objectMapper.readValue(content, EmployerEvent::class.java)
+    objectMapper.readValue(message, EmployerEvent::class.java)
 }
 
 class EmployerCreationMessageService(
