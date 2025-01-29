@@ -13,8 +13,12 @@ ext["logback.version"] = "1.5.15"
 dependencies {
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.1.1")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.2.2")
+  implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
+
+  runtimeOnly("org.flywaydb:flyway-database-postgresql")
+  runtimeOnly("org.postgresql:postgresql")
 
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
@@ -45,6 +49,7 @@ testing {
           implementation("org.apache.commons:commons-compress:1.27.1")
         }
         implementation("org.testcontainers:localstack")
+        implementation("org.testcontainers:postgresql")
         implementation("org.jetbrains.kotlin:kotlin-test-junit5")
       }
 

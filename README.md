@@ -36,7 +36,7 @@ The integration service has a `/health` endpoint which indicates the service is 
 docker compose pull && docker compose up -d
 ```
 
-will build the application and run it and HMPPS Auth within a local docker instance.
+will build the application and run it and HMPPS Auth, with a `PostgreSQL` database and `localstack` within local docker.
 
 ### Running the application in Intellij
 
@@ -44,7 +44,7 @@ will build the application and run it and HMPPS Auth within a local docker insta
 docker compose pull && docker compose up --scale hmpps-jobs-board-integration-api=0 -d
 ```
 
-will just start a docker instance of HMPPS Auth and `localstack`. The application should then be started with a `dev` or `local` active profile
+will just start a docker instance of HMPPS Auth, `PostgreSQL` database, and `localstack`. The application should then be started with a `dev` or `local` active profile
 in Intellij.
 * supply required env var, e.g.
   * `spring.profiles.active`=`dev`
