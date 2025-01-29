@@ -28,8 +28,9 @@ class JobsBoardApiWebClient(
     return jobsBoardWebClient
       .get().uri("/employers/{id}", id).accept(APPLICATION_JSON).retrieve()
       .bodyToMono(GetEmployerResponse::class.java)
-      .onErrorResume(WebClientResponseException.NotFound::class.java) {
-        log.debug("Employer not found. employerId={}", id)
+      .onErrorResume(WebClientResponseException.NotFound::class.java) { error ->
+        val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
+        log.warn("Employer not found. employerId={}; errorResponse={}", id, errorResponse)
         Mono.empty()
       }.block()?.employer()
   }

@@ -13,8 +13,9 @@ api:
   base.url:
     jobsboard: "https://jobs-board-api-dev.hmpps.service.justice.gov.uk"
     mnjobboard: "https://testservices.sequation.net/sequation-job-api"
-
   integration:
+    enabled: false
+  client.logging:
     enabled: false
 
 spring:
@@ -25,3 +26,8 @@ spring:
   flyway:
     user: 'job-board-intg'
     password: 'job-board-intg'
+
+logging.level:
+  uk.gov.justice.digital.hmpps.jobsboardintegrationapi:
+    shared.infrastructure: DEBUG
+  reactor.netty.http.client: INFO
