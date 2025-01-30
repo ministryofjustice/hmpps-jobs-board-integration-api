@@ -27,23 +27,23 @@ class RefDataMappingRepositoryShould : RepositoryTestCase() {
   fun `return correct mapping, given reference data and data value`() {
     val refData = "employer_status"
     val dataValue = "GOLD"
-    val expectedExtId = 2L
+    val expectedExtId = 2
 
     val mapping = refDataMappingRepository.findByDataRefDataAndDataValue(refData, dataValue)
 
-    assertThat(mapping).hasSize(1)
-    assertThat(mapping.first().data.externalId).isEqualTo(expectedExtId)
+    assertThat(mapping).isNotNull
+    assertThat(mapping!!.data.externalId).isEqualTo(expectedExtId)
   }
 
   @Test
   fun `return correct mapping, given reference data and data external ID`() {
     val refData = "employer_sector"
-    val dataExternalId = 6L
+    val dataExternalId = 6
     val expectedDataValue = "CONSTRUCTION"
 
     val mapping = refDataMappingRepository.findByDataRefDataAndDataExternalId(refData, dataExternalId)
-    assertThat(mapping).hasSize(1)
-    assertThat(mapping.first().data.value).isEqualTo(expectedDataValue)
+    assertThat(mapping).isNotNull
+    assertThat(mapping!!.data.value).isEqualTo(expectedDataValue)
   }
 
   @Nested

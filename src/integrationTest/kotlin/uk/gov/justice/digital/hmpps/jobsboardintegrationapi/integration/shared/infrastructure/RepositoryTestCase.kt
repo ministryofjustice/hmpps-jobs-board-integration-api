@@ -79,12 +79,12 @@ abstract class RepositoryTestCase {
   private val refDataMappingsForTests: List<RefDataMapping>
     get() = mapOf(
       "employer_status" to mapOf(
-        "KEY_PARTNER" to 1L,
+        "KEY_PARTNER" to 1,
         "GOLD" to 2,
         "SILVER" to 3,
       ),
       "employer_sector" to mapOf(
-        "ADMIN_SUPPORT" to 14L,
+        "ADMIN_SUPPORT" to 14,
         "AGRICULTURE" to 1,
         "ARTS_ENTERTAINMENT" to 18,
         "CONSTRUCTION" to 6,
