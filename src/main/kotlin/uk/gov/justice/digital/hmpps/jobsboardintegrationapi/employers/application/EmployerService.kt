@@ -3,6 +3,12 @@ package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.applicati
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.config.ConditionalOnIntegrationEnabled
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Employer
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerExternalId
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerExternalIdRepository
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EmployerSector
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EmployerStatus
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMappingRepository
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.JobsBoardApiClient
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.MNJobBoardApiClient
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreatEmployerRequest
@@ -13,12 +19,13 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructur
 class EmployerService(
   private val jobsBoardApiClient: JobsBoardApiClient,
   private val mnJobBoardApiClient: MNJobBoardApiClient,
+  private val employerExternalIdRepository: EmployerExternalIdRepository,
+  private val refDataMappingRepository: RefDataMappingRepository,
 ) {
   fun retrieveById(id: String): Employer? = jobsBoardApiClient.getEmployer(id)
 
   fun create(mnEmployer: MNEmployer): MNEmployer {
     val request = CreatEmployerRequest.from(mnEmployer)
-    // TODO cater optional fields for employerStatus = KEY_PARTNER (sectorId==2)
     return mnJobBoardApiClient.createEmployer(request)
   }
 
@@ -26,15 +33,25 @@ class EmployerService(
     MNEmployer(
       employerName = name,
       employerBio = description,
-      // FIXME translate from employer.sector
-      sectorId = 1,
-      // FIXME translate from employer.status
-      partnerId = 1,
+      sectorId = translateId(EmployerSector, sector),
+      partnerId = translateId(EmployerStatus, status),
     )
   }
 
-  fun createIdMapping(mnId: Long, employerId: String) {
-    // TODO persist ID mapping
-    throw NotImplementedError("ID Mapping is not yet implemented")
+  fun existsIdMappingById(id: String): Boolean = retrieveExternalIdById(id) != null
+
+  fun createIdMapping(externalId: Long, id: String) {
+    if (!existsIdMappingById(id)) {
+      employerExternalIdRepository.save(EmployerExternalId(id, externalId))
+    } else {
+      throw Exception("Employer ID cannot be created! ID mapping already exists. ID pair: externalId=$externalId, id=$id")
+    }
   }
+
+  private fun retrieveExternalIdById(id: String): Long? = employerExternalIdRepository.findByKeyId(id)?.key?.externalId
+
+  private fun translateId(refData: RefData, value: String) =
+    refDataMappingRepository.findByDataRefDataAndDataValue(refData.type, value)?.data?.externalId ?: run {
+      throw IllegalArgumentException("Reference data does not exist! refData=${refData.type}: value=$value")
+    }
 }

@@ -13,7 +13,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.ReadOn
 data class RefDataMapping(
   @EmbeddedId var data: RefDataMappingKey,
 ) {
-  constructor(refData: String, value: String, externalId: Long) : this(RefDataMappingKey(refData, value, externalId))
+  constructor(refData: String, value: String, externalId: Int) : this(RefDataMappingKey(refData, value, externalId))
   constructor() : this(RefDataMappingKey())
 }
 
@@ -21,7 +21,7 @@ data class RefDataMapping(
 data class RefDataMappingKey(
   @Column(name = "ref_data") val refData: String,
   @Column(name = "value") val value: String,
-  @Column(name = "ext_id") val externalId: Long,
+  @Column(name = "ext_id") val externalId: Int,
 ) {
   constructor() : this("", "", 0)
 }
@@ -30,7 +30,7 @@ data class RefDataMappingKey(
 interface RefDataMappingRepository : ReadOnlyRepository<RefDataMapping, RefDataMappingKey> {
   fun findByDataRefData(refData: String): List<RefDataMapping>
 
-  fun findByDataRefDataAndDataValue(refData: String, dataValue: String): List<RefDataMapping>
+  fun findByDataRefDataAndDataValue(refData: String, dataValue: String): RefDataMapping?
 
-  fun findByDataRefDataAndDataExternalId(refData: String, dataExternalId: Long): List<RefDataMapping>
+  fun findByDataRefDataAndDataExternalId(refData: String, dataExternalId: Int): RefDataMapping?
 }

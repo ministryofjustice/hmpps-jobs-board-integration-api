@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain
 
-object EmployerObjects {
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNEmployer
+
+internal object EmployerObjects {
   val tesco = Employer(
     id = "89de6c84-3372-4546-bbc1-9d1dc9ceb354",
     name = "Tesco",
@@ -39,5 +41,45 @@ object EmployerObjects {
     description = "This is a description",
     sector = "CONSTRUCTION",
     status = "SILVER",
+  )
+
+  val statusToPartnerIdMap: Map<String, Int> by lazy {
+    mapOf(
+      "KEY_PARTNER" to 1,
+      "GOLD" to 2,
+      "SILVER" to 3,
+    )
+  }
+
+  val sectorToIdMap: Map<String, Int> by lazy {
+    mapOf(
+      "ADMIN_SUPPORT" to 14,
+      "AGRICULTURE" to 1,
+      "ARTS_ENTERTAINMENT" to 18,
+      "CONSTRUCTION" to 6,
+      "EDUCATION" to 16,
+      "ENERGY" to 4,
+      "FINANCE" to 11,
+      "HEALTH_SOCIAL" to 17,
+      "HOSPITALITY_CATERING" to 9,
+      "LOGISTICS" to 8,
+      "MANUFACTURING" to 3,
+      "MINING" to 2,
+      "OTHER" to 19,
+      "PROFESSIONALS_SCIENTISTS_TECHNICIANS" to 13,
+      "PROPERTY" to 12,
+      "PUBLIC_ADMIN_DEFENCE" to 15,
+      "WASTE_MANAGEMENT" to 5,
+      "RETAIL" to 7,
+      "TECHNOLOGY" to 10,
+    )
+  }
+
+  internal fun Employer.mnEmployer(externalId: Long) = MNEmployer(
+    id = externalId,
+    employerName = name,
+    employerBio = description,
+    sectorId = sectorToIdMap[sector]!!,
+    partnerId = statusToPartnerIdMap[status]!!,
   )
 }
