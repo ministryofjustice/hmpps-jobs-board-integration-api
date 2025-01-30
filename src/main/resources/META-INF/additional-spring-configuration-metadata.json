@@ -1,0 +1,23 @@
+{
+  "properties": [
+    {
+      "name": "api.base.url.jobsboard",
+      "type": "java.lang.String",
+      "description": "Base URL for Jobs Board APIs"
+    },
+    {
+      "name": "api.base.url.mnjobboard",
+      "type": "java.lang.String",
+      "description": "Base URL for MN Job Board APIs"
+    },
+    {
+      "name": "api.integration.enabled",
+      "type": "java.lang.String",
+      "description": "Feature flag to switch on/off JobsBoard-to-MN-Job-Board Integration functions"
+    },
+    {
+      "name": "api.client.logging.enabled",
+      "type": "java.lang.String",
+      "description": "Enabling client logging at API Web Client; disabled by default"
+    }
+  ] }
