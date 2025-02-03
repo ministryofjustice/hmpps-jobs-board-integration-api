@@ -9,9 +9,10 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.mnEmployer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.MNJobBoardApiExtension.Companion.mnJobBoardApi
-import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreatEmployerRequest
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateEmployerRequest
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNEmployer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNJobBoardApiWebClient
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateEmployerRequest
 import kotlin.test.assertFailsWith
 
 class MNJobBoardApiWebClientShould : IntegrationTestBase() {
@@ -19,18 +20,18 @@ class MNJobBoardApiWebClientShould : IntegrationTestBase() {
   @Autowired
   private lateinit var apiWebClient: MNJobBoardApiWebClient
 
+  private val employer = sainsburys
+  private val mnEmployer: MNEmployer get() = employer.copy(createdAt = timeProvider.nowAsInstant()).mnEmployer()
+
   @Nested
   @DisplayName("MN JobBoard `POST` /employers")
   inner class EmployersPostEndpoint {
-    private val employer = sainsburys
-    private val mnEmployer: MNEmployer get() = employer.copy(createdAt = timeProvider.nowAsInstant()).mnEmployer()
-
     @Test
     fun `create employer, with valid details`() {
       val expectedEmployer = mnEmployer.copy(id = 1L)
       mnJobBoardApi.stubCreateEmployer(mnEmployer, expectedEmployer.id!!)
 
-      val actualEmployer = CreatEmployerRequest.from(mnEmployer).let { apiWebClient.createEmployer(it) }
+      val actualEmployer = CreateEmployerRequest.from(mnEmployer).let { apiWebClient.createEmployer(it) }
 
       assertThat(actualEmployer).isEqualTo(expectedEmployer)
     }
@@ -40,13 +41,48 @@ class MNJobBoardApiWebClientShould : IntegrationTestBase() {
       mnJobBoardApi.stubCreateEmployerUnauthorised()
 
       val exception = assertFailsWith<Exception> {
-        CreatEmployerRequest.from(mnEmployer).let { apiWebClient.createEmployer(it) }
+        CreateEmployerRequest.from(mnEmployer).let { apiWebClient.createEmployer(it) }
       }
 
       with(exception) {
         assertThat(message).contains("Fail to create employer") // reactive throw (ReactiveException)
         with(cause!!) {
           assertThat(message).contains("Fail to create employer") // actual throw (Exception)
+          with(cause!!) {
+            assertThat(message).contains("401 Unauthorized") // cause (401) (WebClientResponseException$Unauthorized)
+          }
+        }
+      }
+    }
+  }
+
+  @Nested
+  @DisplayName("MN JobBoard `POST` /employers/{id}")
+  inner class EmployerPostEndpoint {
+    private val existingEmployer = with(mnEmployer) { copy(id = 1L, employerBio = "$employerBio |updated") }
+
+    @Test
+    fun `update employer, with valid details`() {
+      val expectedEmployer = existingEmployer.copy()
+      mnJobBoardApi.stubUpdateEmployer(existingEmployer)
+
+      val actualEmployer = UpdateEmployerRequest.from(existingEmployer).let { apiWebClient.updateEmployer(it) }
+
+      assertThat(actualEmployer).isEqualTo(expectedEmployer)
+    }
+
+    @Test
+    fun `receive unauthorised error, if API access token is invalid`() {
+      mnJobBoardApi.stubUpdateEmployerUnauthorised(existingEmployer.id!!)
+
+      val exception = assertFailsWith<Exception> {
+        UpdateEmployerRequest.from(existingEmployer).let { apiWebClient.updateEmployer(it) }
+      }
+
+      with(exception) {
+        assertThat(message).contains("Fail to update employer") // reactive throw (ReactiveException)
+        with(cause!!) {
+          assertThat(message).contains("Fail to update employer") // actual throw (Exception)
           with(cause!!) {
             assertThat(message).contains("401 Unauthorized") // cause (401) (WebClientResponseException$Unauthorized)
           }

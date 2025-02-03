@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEvent
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEventType
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEventType.EMPLOYER_CREATED
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEventType.EMPLOYER_UPDATED
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.IntegrationEvent
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.IntegrationMessageService
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MessageAttributes
@@ -45,8 +46,8 @@ abstract class EmployerMessageService(
 }
 
 class EmployerCreationMessageService(
-  protected val retriever: EmployerRetriever,
-  protected val registrar: EmployerRegistrar,
+  private val retriever: EmployerRetriever,
+  private val registrar: EmployerRegistrar,
   objectMapper: ObjectMapper,
 ) : EmployerMessageService(EMPLOYER_CREATED, objectMapper) {
 
@@ -62,6 +63,28 @@ class EmployerCreationMessageService(
       }
     } catch (e: Exception) {
       throw Exception("Error at employer creation event: eventId=${employerEvent.eventId}", e)
+    }
+  }
+}
+
+class EmployerUpdateMessageService(
+  private val retriever: EmployerRetriever,
+  private val registrar: EmployerRegistrar,
+  objectMapper: ObjectMapper,
+) : EmployerMessageService(EMPLOYER_UPDATED, objectMapper) {
+
+  private companion object {
+    private val log: Logger = LoggerFactory.getLogger(this::class.java)
+  }
+
+  override fun handleEvent(employerEvent: EmployerEvent) {
+    log.info("handle employer update event; eventId={}", employerEvent.eventId)
+    try {
+      retriever.retrieve(employerEvent.employerId).also { employer ->
+        registrar.registerUpdate(employer)
+      }
+    } catch (e: Exception) {
+      throw Exception("Error at employer update event: eventId=${employerEvent.eventId}", e)
     }
   }
 }

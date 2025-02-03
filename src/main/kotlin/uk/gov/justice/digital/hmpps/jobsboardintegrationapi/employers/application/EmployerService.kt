@@ -11,8 +11,9 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDa
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMappingRepository
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.JobsBoardApiClient
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.MNJobBoardApiClient
-import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreatEmployerRequest
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateEmployerRequest
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNEmployer
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateEmployerRequest
 
 @ConditionalOnIntegrationEnabled
 @Service
@@ -25,17 +26,24 @@ class EmployerService(
   fun retrieveById(id: String): Employer? = jobsBoardApiClient.getEmployer(id)
 
   fun create(mnEmployer: MNEmployer): MNEmployer {
-    val request = CreatEmployerRequest.from(mnEmployer)
+    val request = CreateEmployerRequest.from(mnEmployer)
     return mnJobBoardApiClient.createEmployer(request)
   }
 
-  fun convert(employer: Employer) = employer.run {
-    MNEmployer(
-      employerName = name,
-      employerBio = description,
-      sectorId = translateId(EmployerSector, sector),
-      partnerId = translateId(EmployerStatus, status),
-    )
+  fun update(mnEmployer: MNEmployer): MNEmployer {
+    val request = UpdateEmployerRequest.from(mnEmployer)
+    return mnJobBoardApiClient.updateEmployer(request)
+  }
+
+  fun convert(newEmployer: Employer) = convertAndMapId(newEmployer)
+
+  fun convertExisting(existingEmployer: Employer): MNEmployer {
+    val extId = retrieveExternalIdById(existingEmployer.id)
+    return if (extId != null) {
+      convertAndMapId(existingEmployer, extId)
+    } else {
+      throw IllegalStateException("Employer with id=${existingEmployer.id} not found (ID mapping missing)")
+    }
   }
 
   fun existsIdMappingById(id: String): Boolean = retrieveExternalIdById(id) != null
@@ -46,6 +54,16 @@ class EmployerService(
     } else {
       throw Exception("Employer ID cannot be created! ID mapping already exists. ID pair: externalId=$externalId, id=$id")
     }
+  }
+
+  private fun convertAndMapId(employer: Employer, id: Long? = null) = employer.run {
+    MNEmployer(
+      id = id,
+      employerName = name,
+      employerBio = description,
+      sectorId = translateId(EmployerSector, sector),
+      partnerId = translateId(EmployerStatus, status),
+    )
   }
 
   private fun retrieveExternalIdById(id: String): Long? = employerExternalIdRepository.findByKeyId(id)?.key?.externalId

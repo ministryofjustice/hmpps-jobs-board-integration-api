@@ -24,16 +24,16 @@ class EmployerRegistrarShould : UnitTestBase() {
   private lateinit var employerRegistrar: EmployerRegistrar
 
   @Nested
-  @DisplayName("Given a valid employer to be registered")
-  inner class GivenAnEmployerToRegister {
+  @DisplayName("Given a new employer to be created at MN")
+  inner class GivenAnEmployerToCreate {
     private val employer = sainsburys
     private val externalId = 1L
     private val mnEmployer = employer.mnEmployer(externalId)
     private val mnEmployerNoId = mnEmployer.copy(id = null)
 
     @Test
-    fun `register a valid employer`() {
-      givenMNEmployerCreated(employer, mnEmployerNoId, mnEmployer)
+    fun `register new employer`() {
+      givenMNEmployerToCreate(employer, mnEmployerNoId, mnEmployer)
 
       employerRegistrar.registerCreation(employer)
 
@@ -54,7 +54,7 @@ class EmployerRegistrarShould : UnitTestBase() {
 
     @Test
     fun `NOT finish registering employer without external ID received`() {
-      givenMNEmployerCreated(employer, mnEmployerNoId, mnEmployerNoId)
+      givenMNEmployerToCreate(employer, mnEmployerNoId, mnEmployerNoId)
 
       val exception = assertFailsWith<Exception> {
         employerRegistrar.registerCreation(employer)
@@ -86,9 +86,90 @@ class EmployerRegistrarShould : UnitTestBase() {
     }
   }
 
-  private fun givenMNEmployerCreated(employer: Employer, convertedEmployer: MNEmployer, mnEmployer: MNEmployer) {
+  @Nested
+  @DisplayName("Given an existing employer to be updated to MN")
+  inner class GivenAnEmployerToUpdate {
+    private val employer = sainsburys.run { copy(description = "$description |updated") }
+    private val externalId = 1L
+    private val mnEmployer = employer.mnEmployer(externalId)
+
+    @Test
+    fun `update a registered employer`() {
+      givenMNEmployerToUpdate(employer, mnEmployer)
+
+      employerRegistrar.registerUpdate(employer)
+
+      verify(employerService, never()).createIdMapping(externalId, employer.id)
+    }
+
+    @Test
+    fun `throw exception, when external ID has been changed unexpectedly`() {
+      givenMNEmployerToUpdate(employer, mnEmployer, mnEmployer.copy(id = 999L))
+
+      val exception = assertFailsWith<Exception> {
+        employerRegistrar.registerUpdate(employer)
+      }
+
+      with(exception) {
+        assertThat(message).startsWith("Fail to register employer-update").contains("employerId=${employer.id}")
+        with(cause!!) {
+          assertThat(this).isInstanceOfAny(AssertionError::class.java)
+          assertThat(message).startsWith("MN Employer ID has changed!").contains("employerId=${employer.id}")
+        }
+      }
+    }
+
+    @Test
+    fun `throw exception, with error from conversion`() {
+      val expectedException = IllegalStateException("Employer with id=${employer.id} not found (ID mapping missing)")
+      whenever(employerService.convertExisting(employer)).thenThrow(expectedException)
+
+      val actualException = assertFailsWith<Exception> {
+        employerRegistrar.registerUpdate(employer)
+      }
+
+      with(actualException) {
+        assertThat(message).startsWith("Fail to register employer-update").contains("employerId=${employer.id}")
+        with(cause!!) {
+          assertThat(this).isInstanceOfAny(expectedException.javaClass)
+          assertThat(message).isEqualTo(expectedException.message)
+        }
+      }
+    }
+
+    @Test
+    fun `throw exception, with error from updating downstream system`() {
+      val expectedException = "some errors while updating".let {
+        RuntimeException("Fail to update employer! errorResponse=$it", RuntimeException(it))
+      }
+      whenever(employerService.convertExisting(employer)).thenReturn(mnEmployer)
+      whenever(employerService.update(mnEmployer)).thenThrow(expectedException)
+
+      val actualException = assertFailsWith<Throwable> {
+        employerRegistrar.registerUpdate(employer)
+      }
+
+      with(actualException) {
+        assertThat(message).startsWith("Fail to register employer-update").contains("employerId=${employer.id}")
+        with(cause!!) {
+          assertThat(message).isEqualTo(expectedException.message)
+        }
+      }
+    }
+  }
+
+  private fun givenMNEmployerToCreate(employer: Employer, convertedEmployer: MNEmployer, mnEmployer: MNEmployer) {
     whenever(employerService.existsIdMappingById(employer.id)).thenReturn(false)
     whenever(employerService.convert(employer)).thenReturn(convertedEmployer)
     whenever(employerService.create(convertedEmployer)).thenReturn(mnEmployer)
+  }
+
+  private fun givenMNEmployerToUpdate(
+    employer: Employer,
+    mnEmployer: MNEmployer,
+    updatedEmployer: MNEmployer = mnEmployer,
+  ) {
+    whenever(employerService.convertExisting(employer)).thenReturn(mnEmployer)
+    whenever(employerService.update(mnEmployer)).thenReturn(updatedEmployer)
   }
 }

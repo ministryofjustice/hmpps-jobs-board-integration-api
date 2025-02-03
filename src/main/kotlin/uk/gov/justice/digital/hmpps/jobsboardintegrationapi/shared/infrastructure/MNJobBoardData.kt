@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure
 
-data class CreatEmployerRequest(
+data class CreateEmployerRequest(
   val employerName: String,
   val employerBio: String,
   val sectorId: Int,
@@ -10,16 +10,36 @@ data class CreatEmployerRequest(
 ) {
   companion object {
     fun from(employer: MNEmployer) =
-      employer.run { CreatEmployerRequest(employerName, employerBio, sectorId, partnerId, imgName, path) }
+      employer.run { CreateEmployerRequest(employerName, employerBio, sectorId, partnerId, imgName, path) }
   }
 }
 
-typealias CreatEmployerResponse = MNEmployer
+typealias CreateEmployerResponse = MNEmployer
 
-data class MNCreatEmployerResponse(
+data class UpdateEmployerRequest(
+  val id: Long,
+  val employerName: String,
+  val employerBio: String,
+  val sectorId: Int,
+  val partnerId: Int,
+  val imgName: String? = null,
+  val path: String? = null,
+) {
+  companion object {
+    fun from(employer: MNEmployer) =
+      employer.run { UpdateEmployerRequest(id!!, employerName, employerBio, sectorId, partnerId, imgName, path) }
+  }
+}
+
+typealias UpdateEmployerResponse = MNEmployer
+
+data class MNCreateOrUpdateEmployerResponse(
   val message: MNMessage,
   val responseObject: MNEmployer,
 )
+
+typealias MNCreateEmployerResponse = MNCreateOrUpdateEmployerResponse
+typealias MNUpdateEmployerResponse = MNCreateOrUpdateEmployerResponse
 
 data class MNEmployer(
   val id: Long? = null,
