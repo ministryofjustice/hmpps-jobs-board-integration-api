@@ -15,8 +15,15 @@ generic-service:
     EXAMPLE_API_URL: "https://jobs-board-integration-api-dev.hmpps.service.justice.gov.uk"
     API_BASE_URL_JOBSBOARD: "https://jobs-board-api-dev.hmpps.service.justice.gov.uk"
     API_BASE_URL_MNJOBBOARD: "https://testservices.sequation.net/sequation-job-api"
+    API_INTEGRATION_ENABLED: true
 
   serviceAccountName: education-skills-work-employment-dev
+
+  namespace_secrets:
+    sqs-integration-queue-instance-output:
+      HMPPS_SQS_QUEUES_INTEGRATIONQUEUE_QUEUE_NAME: "sqs_queue_name"
+    sqs-integration-dlq-instance-output:
+      HMPPS_SQS_QUEUES_INTEGRATIONQUEUE_DLQ_NAME: "sqs_queue_name"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
