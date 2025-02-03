@@ -29,4 +29,18 @@ class EmployerRegistrar(
       }
     }
   }
+
+  fun registerUpdate(employer: Employer) {
+    try {
+      val pendingUpdate = employerService.convertExisting(employer)
+      val updated = employerService.update(pendingUpdate)
+      assert(updated.id == pendingUpdate.id) {
+        "MN Employer ID has changed! employerId=${employer.id}, employerName=${employer.name}; previous ID=${pendingUpdate.id}, new ID=${updated.id}"
+      }
+    } catch (throwable: Throwable) {
+      "Fail to register employer-update; employerId=${employer.id}, employerName=${employer.name}".let { message ->
+        throw Exception(message, throwable)
+      }
+    }
+  }
 }

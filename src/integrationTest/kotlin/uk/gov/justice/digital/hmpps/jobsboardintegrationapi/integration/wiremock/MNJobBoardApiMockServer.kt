@@ -30,9 +30,33 @@ class MNJobBoardApiMockServer(
     )
   }
 
+  fun stubUpdateEmployer(mnEmployer: MNEmployer) {
+    val employerUpdated = mnEmployer.copy()
+    stubFor(
+      post("$EMPLOYERS_ENDPOINT/${mnEmployer.id!!}")
+        .withHeader("Authorization", matching("^Bearer .+\$"))
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(employerUpdated.response()),
+        ),
+    )
+  }
+
   fun stubCreateEmployerUnauthorised() {
     stubFor(
       post(EMPLOYERS_ENDPOINT)
+        .withHeader("Authorization", matching("^Bearer .+\$"))
+        .willReturn(
+          aResponse()
+            .withStatus(401),
+        ),
+    )
+  }
+
+  fun stubUpdateEmployerUnauthorised(id: Long) {
+    stubFor(
+      post("$EMPLOYERS_ENDPOINT/$id")
         .withHeader("Authorization", matching("^Bearer .+\$"))
         .willReturn(
           aResponse()

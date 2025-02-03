@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.JobsBo
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.MNJobBoardApiClient
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateEmployerRequest
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNEmployer
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateEmployerRequest
 
 @ConditionalOnIntegrationEnabled
 @Service
@@ -29,7 +30,21 @@ class EmployerService(
     return mnJobBoardApiClient.createEmployer(request)
   }
 
+  fun update(mnEmployer: MNEmployer): MNEmployer {
+    val request = UpdateEmployerRequest.from(mnEmployer)
+    return mnJobBoardApiClient.updateEmployer(request)
+  }
+
   fun convert(newEmployer: Employer) = convertAndMapId(newEmployer)
+
+  fun convertExisting(existingEmployer: Employer): MNEmployer {
+    val extId = retrieveExternalIdById(existingEmployer.id)
+    return if (extId != null) {
+      convertAndMapId(existingEmployer, extId)
+    } else {
+      throw IllegalStateException("Employer with id=${existingEmployer.id} not found (ID mapping missing)")
+    }
+  }
 
   fun existsIdMappingById(id: String): Boolean = retrieveExternalIdById(id) != null
 

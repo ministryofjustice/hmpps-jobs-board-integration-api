@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDa
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EmployerStatus
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application.ServiceTestCase
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateEmployerRequest
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateEmployerRequest
 import kotlin.test.assertFailsWith
 
 class EmployerServiceShould : ServiceTestCase() {
@@ -109,6 +110,17 @@ class EmployerServiceShould : ServiceTestCase() {
           assertThat(externalId).isEqualTo(expectedExternalId)
         }
       }
+
+      @Test
+      fun `NOT convert existing employer to MN, when external ID doest not exist`() {
+        givenEmployerExternalIDNotExist(employer.id)
+
+        val exception = assertFailsWith<IllegalStateException> {
+          employerService.convertExisting(employer)
+        }
+
+        assertThat(exception.message).isEqualTo("Employer with id=${employer.id} not found (ID mapping missing)")
+      }
     }
 
     @Nested
@@ -122,6 +134,28 @@ class EmployerServiceShould : ServiceTestCase() {
         val exists = employerService.existsIdMappingById(id)
 
         assertThat(exists).isTrue
+      }
+
+      @Test
+      fun `convert existing employer to MN`() {
+        givenEmployerExternalIDExists(employer.id, externalId)
+        with(employer) { givenRefDataMappings(status, sector) }
+
+        val actualMNEmployer = employerService.convertExisting(employer)
+
+        assertThat(actualMNEmployer).isEqualTo(mnEmployer)
+      }
+
+      @Test
+      fun `update employer at MN`() {
+        val revisedEmployer = mnEmployer.copy(employerBio = "${mnEmployer.employerBio} |updated")
+        UpdateEmployerRequest.from(revisedEmployer).let {
+          whenever(mnJobBoardApiClient.updateEmployer(it)).thenReturn(revisedEmployer)
+        }
+
+        val actualMNEmployer = employerService.update(revisedEmployer)
+
+        assertThat(actualMNEmployer).isEqualTo(revisedEmployer)
       }
     }
   }

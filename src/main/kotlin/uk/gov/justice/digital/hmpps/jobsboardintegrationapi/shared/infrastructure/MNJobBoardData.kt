@@ -16,12 +16,30 @@ data class CreateEmployerRequest(
 
 typealias CreateEmployerResponse = MNEmployer
 
+data class UpdateEmployerRequest(
+  val id: Long,
+  val employerName: String,
+  val employerBio: String,
+  val sectorId: Int,
+  val partnerId: Int,
+  val imgName: String? = null,
+  val path: String? = null,
+) {
+  companion object {
+    fun from(employer: MNEmployer) =
+      employer.run { UpdateEmployerRequest(id!!, employerName, employerBio, sectorId, partnerId, imgName, path) }
+  }
+}
+
+typealias UpdateEmployerResponse = MNEmployer
+
 data class MNCreateOrUpdateEmployerResponse(
   val message: MNMessage,
   val responseObject: MNEmployer,
 )
 
 typealias MNCreateEmployerResponse = MNCreateOrUpdateEmployerResponse
+typealias MNUpdateEmployerResponse = MNCreateOrUpdateEmployerResponse
 
 data class MNEmployer(
   val id: Long? = null,

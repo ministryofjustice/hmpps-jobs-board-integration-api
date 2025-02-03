@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateEmployerRequest
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNEmployer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNJobBoardApiWebClient
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateEmployerRequest
 import kotlin.test.assertFailsWith
 
 class MNJobBoardApiWebClientShould : IntegrationTestBase() {
@@ -47,6 +48,41 @@ class MNJobBoardApiWebClientShould : IntegrationTestBase() {
         assertThat(message).contains("Fail to create employer") // reactive throw (ReactiveException)
         with(cause!!) {
           assertThat(message).contains("Fail to create employer") // actual throw (Exception)
+          with(cause!!) {
+            assertThat(message).contains("401 Unauthorized") // cause (401) (WebClientResponseException$Unauthorized)
+          }
+        }
+      }
+    }
+  }
+
+  @Nested
+  @DisplayName("MN JobBoard `POST` /employers/{id}")
+  inner class EmployerPostEndpoint {
+    private val existingEmployer = with(mnEmployer) { copy(id = 1L, employerBio = "$employerBio |updated") }
+
+    @Test
+    fun `update employer, with valid details`() {
+      val expectedEmployer = existingEmployer.copy()
+      mnJobBoardApi.stubUpdateEmployer(existingEmployer)
+
+      val actualEmployer = UpdateEmployerRequest.from(existingEmployer).let { apiWebClient.updateEmployer(it) }
+
+      assertThat(actualEmployer).isEqualTo(expectedEmployer)
+    }
+
+    @Test
+    fun `receive unauthorised error, if API access token is invalid`() {
+      mnJobBoardApi.stubUpdateEmployerUnauthorised(existingEmployer.id!!)
+
+      val exception = assertFailsWith<Exception> {
+        UpdateEmployerRequest.from(existingEmployer).let { apiWebClient.updateEmployer(it) }
+      }
+
+      with(exception) {
+        assertThat(message).contains("Fail to update employer") // reactive throw (ReactiveException)
+        with(cause!!) {
+          assertThat(message).contains("Fail to update employer") // actual throw (Exception)
           with(cause!!) {
             assertThat(message).contains("401 Unauthorized") // cause (401) (WebClientResponseException$Unauthorized)
           }
