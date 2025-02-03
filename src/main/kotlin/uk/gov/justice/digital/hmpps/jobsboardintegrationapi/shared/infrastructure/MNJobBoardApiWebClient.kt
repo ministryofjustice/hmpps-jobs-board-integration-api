@@ -22,13 +22,13 @@ class MNJobBoardApiWebClient(
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  override fun createEmployer(request: CreatEmployerRequest): CreatEmployerResponse {
+  override fun createEmployer(request: CreateEmployerRequest): CreateEmployerResponse {
     log.debug("Creating employer employerName={}", request.employerName)
     log.trace("Create employer request={}", request)
     return mnJobBoardWebClient.post().uri(EMPLOYERS_ENDPOINT)
       .accept(APPLICATION_JSON).body(Mono.just(request), request.javaClass)
       .retrieve()
-      .bodyToMono(MNCreatEmployerResponse::class.java)
+      .bodyToMono(MNCreateEmployerResponse::class.java)
       .onErrorResume { error ->
         val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
         Mono.error(Exception("Fail to create employer! errorResponse=$errorResponse", error))

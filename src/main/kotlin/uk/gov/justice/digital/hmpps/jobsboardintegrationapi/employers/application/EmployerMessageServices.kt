@@ -45,8 +45,8 @@ abstract class EmployerMessageService(
 }
 
 class EmployerCreationMessageService(
-  protected val retriever: EmployerRetriever,
-  protected val registrar: EmployerRegistrar,
+  private val retriever: EmployerRetriever,
+  private val registrar: EmployerRegistrar,
   objectMapper: ObjectMapper,
 ) : EmployerMessageService(EMPLOYER_CREATED, objectMapper) {
 

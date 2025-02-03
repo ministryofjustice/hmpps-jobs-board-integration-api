@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EmployerSector
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EmployerStatus
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application.ServiceTestCase
-import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreatEmployerRequest
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateEmployerRequest
 import kotlin.test.assertFailsWith
 
 class EmployerServiceShould : ServiceTestCase() {
@@ -43,66 +43,6 @@ class EmployerServiceShould : ServiceTestCase() {
     }
 
     @Test
-    fun `return true, when external ID exists`() {
-      val id = employer.id
-      givenEmployerExternalIDExists(id, externalId)
-
-      val exists = employerService.existsIdMappingById(id)
-
-      assertThat(exists).isTrue
-    }
-
-    @Test
-    fun `return false, when external ID does not exists`() {
-      val id = employer.id
-      givenEmployerExternalIDNotExist(id)
-
-      employerService.existsIdMappingById(id)
-
-      val exists = employerService.existsIdMappingById(id)
-      assertThat(exists).isFalse()
-    }
-
-    @Test
-    fun `create employer at MN`() {
-      CreatEmployerRequest.from(mnEmployerNoId).let {
-        whenever(mnJobBoardApiClient.createEmployer(it)).thenReturn(mnEmployer)
-      }
-
-      val actualMNEmployer = employerService.create(mnEmployerNoId)
-
-      assertThat(actualMNEmployer).isEqualTo(mnEmployer)
-    }
-
-    @Test
-    fun `convert employer to MN`() {
-      with(employer) { givenRefDataMappings(status, sector) }
-
-      val actualMNEmployer = employerService.convert(employer)
-
-      assertThat(actualMNEmployer).isEqualTo(mnEmployerNoId)
-    }
-
-    @Test
-    fun `create ID mapping, when external ID does not exist`() {
-      val id = employer.id
-      givenEmployerExternalIDNotExist(id)
-      val expectedEmployerId = id
-      val expectedExternalId = externalId
-
-      employerService.createIdMapping(externalId, id)
-
-      val captor = argumentCaptor<EmployerExternalId>()
-      verify(employerExternalIdRepository).save(captor.capture())
-      val savedExternalId = captor.firstValue
-
-      with(savedExternalId.key) {
-        assertThat(id).isEqualTo(expectedEmployerId)
-        assertThat(externalId).isEqualTo(expectedExternalId)
-      }
-    }
-
-    @Test
     fun `NOT create ID mapping, when external ID exists`() {
       val id = employer.id
       givenEmployerExternalIDExists(id, 2)
@@ -116,6 +56,73 @@ class EmployerServiceShould : ServiceTestCase() {
         .contains("id=$id").contains("externalId=$externalId")
 
       verify(employerExternalIdRepository, never()).save(any())
+    }
+
+    @Nested
+    @DisplayName("And has not yet been registered at MN")
+    inner class AndNotYetRegisteredAtMN {
+      @Test
+      fun `return false, when external ID does not exists`() {
+        val id = employer.id
+        givenEmployerExternalIDNotExist(id)
+
+        employerService.existsIdMappingById(id)
+
+        val exists = employerService.existsIdMappingById(id)
+        assertThat(exists).isFalse()
+      }
+
+      @Test
+      fun `convert new employer to MN`() {
+        with(employer) { givenRefDataMappings(status, sector) }
+
+        val actualMNEmployer = employerService.convert(employer)
+
+        assertThat(actualMNEmployer).isEqualTo(mnEmployerNoId)
+      }
+
+      @Test
+      fun `create employer at MN`() {
+        CreateEmployerRequest.from(mnEmployerNoId).let {
+          whenever(mnJobBoardApiClient.createEmployer(it)).thenReturn(mnEmployer)
+        }
+
+        val actualMNEmployer = employerService.create(mnEmployerNoId)
+
+        assertThat(actualMNEmployer).isEqualTo(mnEmployer)
+      }
+
+      @Test
+      fun `create ID mapping, when external ID does not exist`() {
+        givenEmployerExternalIDNotExist(employer.id)
+        val expectedEmployerId = employer.id
+        val expectedExternalId = externalId
+
+        employerService.createIdMapping(externalId, employer.id)
+
+        val captor = argumentCaptor<EmployerExternalId>()
+        verify(employerExternalIdRepository).save(captor.capture())
+        val savedExternalId = captor.firstValue
+
+        with(savedExternalId.key) {
+          assertThat(id).isEqualTo(expectedEmployerId)
+          assertThat(externalId).isEqualTo(expectedExternalId)
+        }
+      }
+    }
+
+    @Nested
+    @DisplayName("And has already been registered at MN")
+    inner class AndAlreadyRegisteredAtMN {
+      @Test
+      fun `return true, when external ID exists`() {
+        val id = employer.id
+        givenEmployerExternalIDExists(id, externalId)
+
+        val exists = employerService.existsIdMappingById(id)
+
+        assertThat(exists).isTrue
+      }
     }
   }
 

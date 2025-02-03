@@ -24,16 +24,16 @@ class EmployerRegistrarShould : UnitTestBase() {
   private lateinit var employerRegistrar: EmployerRegistrar
 
   @Nested
-  @DisplayName("Given a valid employer to be registered")
-  inner class GivenAnEmployerToRegister {
+  @DisplayName("Given a new employer to be created at MN")
+  inner class GivenAnEmployerToCreate {
     private val employer = sainsburys
     private val externalId = 1L
     private val mnEmployer = employer.mnEmployer(externalId)
     private val mnEmployerNoId = mnEmployer.copy(id = null)
 
     @Test
-    fun `register a valid employer`() {
-      givenMNEmployerCreated(employer, mnEmployerNoId, mnEmployer)
+    fun `register new employer`() {
+      givenMNEmployerToCreate(employer, mnEmployerNoId, mnEmployer)
 
       employerRegistrar.registerCreation(employer)
 
@@ -54,7 +54,7 @@ class EmployerRegistrarShould : UnitTestBase() {
 
     @Test
     fun `NOT finish registering employer without external ID received`() {
-      givenMNEmployerCreated(employer, mnEmployerNoId, mnEmployerNoId)
+      givenMNEmployerToCreate(employer, mnEmployerNoId, mnEmployerNoId)
 
       val exception = assertFailsWith<Exception> {
         employerRegistrar.registerCreation(employer)
@@ -86,7 +86,7 @@ class EmployerRegistrarShould : UnitTestBase() {
     }
   }
 
-  private fun givenMNEmployerCreated(employer: Employer, convertedEmployer: MNEmployer, mnEmployer: MNEmployer) {
+  private fun givenMNEmployerToCreate(employer: Employer, convertedEmployer: MNEmployer, mnEmployer: MNEmployer) {
     whenever(employerService.existsIdMappingById(employer.id)).thenReturn(false)
     whenever(employerService.convert(employer)).thenReturn(convertedEmployer)
     whenever(employerService.create(convertedEmployer)).thenReturn(mnEmployer)
