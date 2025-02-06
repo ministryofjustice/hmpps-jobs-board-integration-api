@@ -1,0 +1,81 @@
+package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain
+
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Employer
+import java.time.Instant
+import java.time.LocalDate
+
+data class Job(
+  var id: String,
+  val title: String,
+  val sector: String,
+  val industrySector: String,
+  val numberOfVacancies: Int,
+  val sourcePrimary: String,
+  val sourceSecondary: String? = null,
+  val charityName: String? = null,
+  val postcode: String,
+  val salaryFrom: Float,
+  val salaryTo: Float? = null,
+  val salaryPeriod: String,
+  val additionalSalaryInformation: String? = null,
+  val isPayingAtLeastNationalMinimumWage: Boolean,
+  val workPattern: String,
+  val hoursPerWeek: String,
+  val contractType: String,
+  val baseLocation: String? = null,
+  val essentialCriteria: String,
+  val desirableCriteria: String? = null,
+  val description: String,
+  val offenceExclusions: String,
+  val offenceExclusionsDetails: String? = null,
+  val isRollingOpportunity: Boolean,
+  val closingDate: LocalDate? = null,
+  val isOnlyForPrisonLeavers: Boolean,
+  val startDate: LocalDate? = null,
+  val howToApply: String,
+  val supportingDocumentationRequired: String? = null,
+  val supportingDocumentationDetails: String? = null,
+
+  val employer: Employer,
+  val expressionsOfInterest: MutableMap<String, ExpressionOfInterest> = mutableMapOf(),
+
+  var createdAt: Instant? = null,
+) {
+  override fun toString(): String = """
+    Job(
+        id=$id,
+        title=$title,
+        sector=$sector,
+        industrySector=$industrySector,
+        numberOfVacancies=$numberOfVacancies,
+        sourcePrimary=$sourcePrimary,
+        sourceSecondary=$sourceSecondary,
+        charityName=$charityName,
+        postcode=$postcode,
+        salaryFrom=$salaryFrom,
+        salaryTo=$salaryTo,
+        salaryPeriod=$salaryPeriod,
+        additionalSalaryInformation=$additionalSalaryInformation,
+        isPayingAtLeastNationalMinimumWage=$isPayingAtLeastNationalMinimumWage,
+        workPattern=$workPattern,
+        hoursPerWeek=$hoursPerWeek,
+        contractType=$contractType,
+        baseLocation=$baseLocation,
+        essentialCriteria=$essentialCriteria,
+        desirableCriteria=$desirableCriteria,
+        description=$description,
+        offenceExclusions=$offenceExclusions,
+        offenceExclusionsDetails=$offenceExclusionsDetails,
+        isRollingOpportunity=$isRollingOpportunity,
+        closingDate=$closingDate,
+        isOnlyForPrisonLeavers=$isOnlyForPrisonLeavers,
+        startDate=$startDate,
+        howToApply=$howToApply,
+        supportingDocumentationRequired=$supportingDocumentationRequired,
+        supportingDocumentationDetails=$supportingDocumentationDetails,
+        employer=$employer,
+        expressionsOfInterest=$expressionsOfInterest,
+        createdAt=$createdAt,
+    )
+  """.trimIndent()
+}

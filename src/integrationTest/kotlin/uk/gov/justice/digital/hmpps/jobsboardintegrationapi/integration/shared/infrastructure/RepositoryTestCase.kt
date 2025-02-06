@@ -18,6 +18,7 @@ import org.springframework.test.context.DynamicPropertySource
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerExternalIdRepository
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.config.TestJpaConfig
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.testcontainers.PostgresContainer
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobExternalIdRepository
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMapping
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMappingKey
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMappingRepository
@@ -39,6 +40,9 @@ abstract class RepositoryTestCase {
 
   @Autowired
   protected lateinit var employerExternalIdRepository: EmployerExternalIdRepository
+
+  @Autowired
+  protected lateinit var jobExternalIdRepository: JobExternalIdRepository
 
   @Autowired
   private lateinit var refDataMappingTestOnlyRepository: RefDataMappingTestOnlyRepository
@@ -69,6 +73,7 @@ abstract class RepositoryTestCase {
   @BeforeEach
   fun setUp() {
     employerExternalIdRepository.deleteAll()
+    jobExternalIdRepository.deleteAll()
 
     whenever(dateTimeProvider.now).thenAnswer { Optional.of(currentTime) }
   }
