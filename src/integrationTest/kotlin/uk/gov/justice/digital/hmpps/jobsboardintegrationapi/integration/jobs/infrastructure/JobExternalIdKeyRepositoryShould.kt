@@ -38,8 +38,8 @@ class JobExternalIdKeyRepositoryShould : RepositoryTestCase() {
   }
 
   @Nested
-  @DisplayName("Given an job has been created")
-  inner class GivenAnJob {
+  @DisplayName("Given a job has been created")
+  inner class GivenAJob {
     private val job = tescoWarehouseHandler
     private val expectedExtId = randomExtId()
     private val externalId = JobExternalId(job.id, expectedExtId)
