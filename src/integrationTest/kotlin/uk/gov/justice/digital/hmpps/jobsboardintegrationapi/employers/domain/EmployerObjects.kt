@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain
 
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.employerSectorIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.employerStatusIdMap
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNEmployer
 
 object EmployerObjects {
@@ -42,23 +44,39 @@ object EmployerObjects {
     sector = "CONSTRUCTION",
     status = "SILVER",
   )
+
+  val employerStatusIdMap = mapOf(
+    "KEY_PARTNER" to 1,
+    "GOLD" to 2,
+    "SILVER" to 3,
+  )
+
+  val employerSectorIdMap = mapOf(
+    "ADMIN_SUPPORT" to 14,
+    "AGRICULTURE" to 1,
+    "ARTS_ENTERTAINMENT" to 18,
+    "CONSTRUCTION" to 6,
+    "EDUCATION" to 16,
+    "ENERGY" to 4,
+    "FINANCE" to 11,
+    "HEALTH_SOCIAL" to 17,
+    "HOSPITALITY_CATERING" to 9,
+    "LOGISTICS" to 8,
+    "MANUFACTURING" to 3,
+    "MINING" to 2,
+    "OTHER" to 19,
+    "PROFESSIONALS_SCIENTISTS_TECHNICIANS" to 13,
+    "PROPERTY" to 12,
+    "PUBLIC_ADMIN_DEFENCE" to 15,
+    "WASTE_MANAGEMENT" to 5,
+    "RETAIL" to 7,
+    "TECHNOLOGY" to 10,
+  )
 }
 
 internal fun Employer.mnEmployer() = MNEmployer(
   employerName = name,
   employerBio = description,
-  sectorId = sectorIdMap[sector]!!,
-  partnerId = statusPartnerIdMap[status]!!,
-)
-
-private val sectorIdMap = mapOf(
-  "CONSTRUCTION" to 6,
-  "LOGISTICS" to 8,
-  "RETAIL" to 7,
-)
-
-private val statusPartnerIdMap = mapOf(
-  "SILVER" to 3,
-  "GOLD" to 2,
-  "KEY_PARTNER" to 1,
+  sectorId = employerSectorIdMap[sector]!!,
+  partnerId = employerStatusIdMap[status]!!,
 )

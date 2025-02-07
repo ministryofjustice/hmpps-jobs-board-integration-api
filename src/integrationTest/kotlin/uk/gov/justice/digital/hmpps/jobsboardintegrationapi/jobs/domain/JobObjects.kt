@@ -30,14 +30,14 @@ internal object JobObjects {
     essentialCriteria = "Essential job criteria",
     desirableCriteria = null,
     description = "Job description\r\nDescribe the role and main tasks. Include any benefits and training opportunities.",
-    offenceExclusions = "[\"CASE_BY_CASE\", \"OTHER\"]",
+    offenceExclusions = "CASE_BY_CASE,OTHER",
     offenceExclusionsDetails = null,
     howToApply = "How to applyHow to apply",
     closingDate = null,
     startDate = null,
     isRollingOpportunity = false,
     isOnlyForPrisonLeavers = true,
-    supportingDocumentationRequired = "[\"DISCLOSURE_LETTER\", \"OTHER\"]",
+    supportingDocumentationRequired = "DISCLOSURE_LETTER,OTHER",
     supportingDocumentationDetails = null,
     employer = tesco,
   )
@@ -81,14 +81,14 @@ internal object JobObjects {
       - Regularly checking forklift equipment for faults or damages
       - Consolidating partial pallets for incoming goods
     """.trimIndent(),
-    offenceExclusions = "[\"NONE\", \"DRIVING\", \"OTH\"]",
+    offenceExclusions = "NONE,DRIVING,OTHER",
     offenceExclusionsDetails = "Other offence A, another offence B, yet another offence C",
     isRollingOpportunity = false,
     closingDate = LocalDate.parse("2025-02-01"),
     isOnlyForPrisonLeavers = true,
     startDate = LocalDate.parse("2025-05-31"),
     howToApply = "",
-    supportingDocumentationRequired = "[\"CV\", \"DISCLOSURE_LETTER\"]",
+    supportingDocumentationRequired = "CV,DISCLOSURE_LETTER",
     supportingDocumentationDetails = "",
     employer = amazon,
   )
@@ -115,16 +115,80 @@ internal object JobObjects {
     essentialCriteria = "Essential job criteria",
     desirableCriteria = null,
     description = "Job description\r\nDescribe the role and main tasks. Include any benefits and training opportunities.",
-    offenceExclusions = "[\"CASE_BY_CASE\", \"OTHER\"]",
+    offenceExclusions = "CASE_BY_CASE,OTHER",
     offenceExclusionsDetails = null,
     howToApply = "How to applyHow to apply",
     closingDate = null,
     startDate = null,
     isRollingOpportunity = false,
     isOnlyForPrisonLeavers = true,
-    supportingDocumentationRequired = "[\"DISCLOSURE_LETTER\", \"OTHER\"]",
+    supportingDocumentationRequired = "DISCLOSURE_LETTER,OTHER",
     supportingDocumentationDetails = null,
     employer = abcConstruction,
+  )
+
+  val jobSourceIdMap = mapOf(
+    "DWP" to 4,
+    "EAB" to 14,
+    "EDUCATION" to 15,
+    "IAG" to 8,
+    "NFN" to 1,
+    "PRISON" to 16,
+    "THIRD_SECTOR" to 10,
+    "PEL" to 2,
+    "OTHER" to 11,
+  )
+
+  val salaryPeriodIdMap = mapOf(
+    "PER_DAY" to 2,
+    "PER_FORTNIGHT" to 4,
+    "PER_HOUR" to 1,
+    "PER_MONTH" to 5,
+    "PER_WEEK" to 3,
+    "PER_YEAR" to 6,
+    "PER_YEAR_PRO_RATA" to 7,
+  )
+
+  val workPatternIdMap = mapOf(
+    "ANNUALISED_HOURS" to 1,
+    "COMPRESSED_HOURS" to 2,
+    "FLEXI_TIME" to 3,
+    "FLEXIBLE_SHIFTS" to 4,
+    "JOB_SHARE" to 5,
+    "STAGGERED_HOURS" to 6,
+    "TERM_TIME_HOURS" to 7,
+    "UNSOCIABLE_HOURS" to 8,
+  )
+
+  val contractTypeIdMap = mapOf(
+    "FIXED_TERM_CONTRACT" to 4,
+    "PERMANENT" to 1,
+    "SELF_EMPLOYMENT" to 3,
+    "TEMPORARY" to 2,
+  )
+
+  val hoursPerWeekIdMap = mapOf(
+    "FULL_TIME" to 2,
+    "FULL_TIME_40_PLUS" to 1,
+    "PART_TIME" to 3,
+    "ZERO_HOURS" to 4,
+  )
+
+  val baseLocationIdMap = mapOf(
+    "REMOTE" to 1,
+    "HYBRID" to 3,
+    "WORKPLACE" to 2,
+  )
+
+  val offenceExclusionIdMap = mapOf(
+    "NONE" to 1,
+    "CASE_BY_CASE" to 15,
+    "ARSON" to 16,
+    "DRIVING" to 17,
+    "MURDER" to 18,
+    "SEXUAL" to 3,
+    "TERRORISM" to 19,
+    "OTHER" to 14,
   )
 
   fun builder(): JobBuilder {
@@ -154,7 +218,7 @@ class JobBuilder {
   var essentialCriteria: String = "Essential job criteria"
   var desirableCriteria: String? = null
   var description: String = ""
-  var offenceExclusions: String = "[\"CASE_BY_CASE\", \"OTHER\"]"
+  var offenceExclusions: String = "CASE_BY_CASE,OTHER"
   var offenceExclusionsDetails: String? = null
   var isRollingOpportunity: Boolean = false
   var closingDate: LocalDate? = null
