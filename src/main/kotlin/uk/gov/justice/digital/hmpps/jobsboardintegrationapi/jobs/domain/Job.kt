@@ -36,11 +36,92 @@ data class Job(
   val supportingDocumentationRequired: String? = null,
   val supportingDocumentationDetails: String? = null,
 
-  val employer: Employer,
+  val employerId: String,
   val expressionsOfInterest: MutableMap<String, ExpressionOfInterest> = mutableMapOf(),
 
   var createdAt: Instant? = null,
 ) {
+  private var _employer: Employer? = null
+
+  constructor(
+    id: String,
+    title: String,
+    sector: String,
+    industrySector: String,
+    numberOfVacancies: Int,
+    sourcePrimary: String,
+    sourceSecondary: String? = null,
+    charityName: String? = null,
+    postcode: String,
+    salaryFrom: Float,
+    salaryTo: Float? = null,
+    salaryPeriod: String,
+    additionalSalaryInformation: String? = null,
+    isPayingAtLeastNationalMinimumWage: Boolean,
+    workPattern: String,
+    hoursPerWeek: String,
+    contractType: String,
+    baseLocation: String? = null,
+    essentialCriteria: String,
+    desirableCriteria: String? = null,
+    description: String,
+    offenceExclusions: String,
+    offenceExclusionsDetails: String? = null,
+    isRollingOpportunity: Boolean,
+    closingDate: LocalDate? = null,
+    isOnlyForPrisonLeavers: Boolean,
+    startDate: LocalDate? = null,
+    howToApply: String,
+    supportingDocumentationRequired: String? = null,
+    supportingDocumentationDetails: String? = null,
+    employer: Employer,
+    expressionsOfInterest: MutableMap<String, ExpressionOfInterest> = mutableMapOf(),
+    createdAt: Instant? = null,
+  ) : this(
+    id = id,
+    title = title,
+    sector = sector,
+    industrySector = industrySector,
+    numberOfVacancies = numberOfVacancies,
+    sourcePrimary = sourcePrimary,
+    sourceSecondary = sourceSecondary,
+    charityName = charityName,
+    postcode = postcode,
+    salaryFrom = salaryFrom,
+    salaryTo = salaryTo,
+    salaryPeriod = salaryPeriod,
+    additionalSalaryInformation = additionalSalaryInformation,
+    isPayingAtLeastNationalMinimumWage = isPayingAtLeastNationalMinimumWage,
+    workPattern = workPattern,
+    hoursPerWeek = hoursPerWeek,
+    contractType = contractType,
+    baseLocation = baseLocation,
+    essentialCriteria = essentialCriteria,
+    desirableCriteria = desirableCriteria,
+    description = description,
+    offenceExclusions = offenceExclusions,
+    offenceExclusionsDetails = offenceExclusionsDetails,
+    isRollingOpportunity = isRollingOpportunity,
+    closingDate = closingDate,
+    isOnlyForPrisonLeavers = isOnlyForPrisonLeavers,
+    startDate = startDate,
+    howToApply = howToApply,
+    supportingDocumentationRequired = supportingDocumentationRequired,
+    supportingDocumentationDetails = supportingDocumentationDetails,
+    employerId = employer.id,
+    expressionsOfInterest = expressionsOfInterest,
+    createdAt = createdAt,
+  ) {
+    this.employer = employer
+  }
+
+  var employer: Employer?
+    get() = _employer
+    set(employer) {
+      employer?.let { if (employer.id != employerId) throw IllegalArgumentException("Employer ID did not match") }
+      _employer = employer
+    }
+
   override fun toString(): String = """
     Job(
         id=$id,
