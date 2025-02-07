@@ -56,6 +56,31 @@ class RefDataMappingRepositoryShould : RepositoryTestCase() {
     fun `return mappings of Employer Sector`() = assertRefDataMappingsHasSize("employer_sector", 19)
   }
 
+  @Nested
+  @DisplayName("Given reference data mappings for job")
+  inner class GivenRefDataMappingsForJob {
+    @Test
+    fun `return mappings of Industry Sector`() = assertRefDataMappingsHasSize("employer_sector", 19)
+
+    @Test
+    fun `return mappings of Job Source`() = assertRefDataMappingsHasSize("job_source", 9)
+
+    @Test
+    fun `return mappings of Salary Period`() = assertRefDataMappingsHasSize("salary_period", 7)
+
+    @Test
+    fun `return mappings of Work Pattern`() = assertRefDataMappingsHasSize("work_pattern", 8)
+
+    @Test
+    fun `return mappings of Hours per Week`() = assertRefDataMappingsHasSize("hours_per_week", 4)
+
+    @Test
+    fun `return mappings of Contract Type`() = assertRefDataMappingsHasSize("contract_type", 4)
+
+    @Test
+    fun `return mappings of Offence Exclusion`() = assertRefDataMappingsHasSize("offence_exclusion", 8)
+  }
+
   private fun assertRefDataMappingsHasSize(refData: String, expectedSize: Int) {
     val refDataMappings = this.refDataMappingRepository.findByDataRefData(refData)
     assertThat(refDataMappings).hasSize(expectedSize)

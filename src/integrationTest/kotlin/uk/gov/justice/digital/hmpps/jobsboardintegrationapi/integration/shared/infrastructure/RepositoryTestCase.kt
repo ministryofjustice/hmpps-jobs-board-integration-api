@@ -18,6 +18,7 @@ import org.springframework.test.context.DynamicPropertySource
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerExternalIdRepository
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.config.TestJpaConfig
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.testcontainers.PostgresContainer
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobExternalIdRepository
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMapping
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMappingKey
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMappingRepository
@@ -39,6 +40,9 @@ abstract class RepositoryTestCase {
 
   @Autowired
   protected lateinit var employerExternalIdRepository: EmployerExternalIdRepository
+
+  @Autowired
+  protected lateinit var jobExternalIdRepository: JobExternalIdRepository
 
   @Autowired
   private lateinit var refDataMappingTestOnlyRepository: RefDataMappingTestOnlyRepository
@@ -69,6 +73,7 @@ abstract class RepositoryTestCase {
   @BeforeEach
   fun setUp() {
     employerExternalIdRepository.deleteAll()
+    jobExternalIdRepository.deleteAll()
 
     whenever(dateTimeProvider.now).thenAnswer { Optional.of(currentTime) }
   }
@@ -103,6 +108,63 @@ abstract class RepositoryTestCase {
         "WASTE_MANAGEMENT" to 5,
         "RETAIL" to 7,
         "TECHNOLOGY" to 10,
+      ),
+      "job_source" to mapOf(
+        "DWP" to 4,
+        "EAB" to 14,
+        "EDUCATION" to 15,
+        "IAG" to 8,
+        "NFN" to 1,
+        "PRISON" to 16,
+        "THIRD_SECTOR" to 10,
+        "PEL" to 2,
+        "OTHER" to 11,
+      ),
+      "salary_period" to mapOf(
+        "PER_DAY" to 2,
+        "PER_FORTNIGHT" to 4,
+        "PER_HOUR" to 1,
+        "PER_MONTH" to 5,
+        "PER_WEEK" to 3,
+        "PER_YEAR" to 6,
+        "PER_YEAR_PRO_RATA" to 7,
+      ),
+      "work_pattern" to mapOf(
+        "ANNUALISED_HOURS" to 1,
+        "COMPRESSED_HOURS" to 2,
+        "FLEXI_TIME" to 3,
+        "FLEXIBLE_SHIFTS" to 4,
+        "JOB_SHARE" to 5,
+        "STAGGERED_HOURS" to 6,
+        "TERM_TIME_HOURS" to 7,
+        "UNSOCIABLE_HOURS" to 8,
+      ),
+      "contract_type" to mapOf(
+        "FIXED_TERM_CONTRACT" to 4,
+        "PERMANENT" to 1,
+        "SELF_EMPLOYMENT" to 3,
+        "TEMPORARY" to 2,
+      ),
+      "hours_per_week" to mapOf(
+        "FULL_TIME" to 2,
+        "FULL_TIME_40_PLUS" to 1,
+        "PART_TIME" to 3,
+        "ZERO_HOURS" to 4,
+      ),
+      "base_location" to mapOf(
+        "REMOTE" to 1,
+        "HYBRID" to 3,
+        "WORKPLACE" to 2,
+      ),
+      "offence_exclusion" to mapOf(
+        "NONE" to 1,
+        "CASE_BY_CASE" to 15,
+        "ARSON" to 16,
+        "DRIVING" to 17,
+        "MURDER" to 18,
+        "SEXUAL" to 3,
+        "TERRORISM" to 19,
+        "OTHER" to 14,
       ),
     ).map { (refData, mapping) -> mapping.map { (value, externalId) -> RefDataMapping(refData, value, externalId) } }
       .flatten()
