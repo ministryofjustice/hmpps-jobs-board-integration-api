@@ -9,8 +9,12 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.mnEmployer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.MNJobBoardApiExtension.Companion.mnJobBoardApi
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.tescoWarehouseHandler
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.mnJob
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateEmployerRequest
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateJobRequest
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNEmployer
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNJob
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNJobBoardApiWebClient
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateEmployerRequest
 import kotlin.test.assertFailsWith
@@ -22,6 +26,9 @@ class MNJobBoardApiWebClientShould : IntegrationTestBase() {
 
   private val employer = sainsburys
   private val mnEmployer: MNEmployer get() = employer.copy(createdAt = timeProvider.nowAsInstant()).mnEmployer()
+
+  private val job = tescoWarehouseHandler
+  private val mnJob: MNJob get() = job.copy(createdAt = timeProvider.nowAsInstant()).mnJob()
 
   @Nested
   @DisplayName("MN JobBoard `POST` /employers")
@@ -83,6 +90,39 @@ class MNJobBoardApiWebClientShould : IntegrationTestBase() {
         assertThat(message).contains("Fail to update employer") // reactive throw (ReactiveException)
         with(cause!!) {
           assertThat(message).contains("Fail to update employer") // actual throw (Exception)
+          with(cause!!) {
+            assertThat(message).contains("401 Unauthorized") // cause (401) (WebClientResponseException$Unauthorized)
+          }
+        }
+      }
+    }
+  }
+
+  @Nested
+  @DisplayName("MN JobBoard `POST` /jobs-prison-leavers")
+  inner class JobsPostEndpoint {
+    @Test
+    fun `create job, with valid details`() {
+      val expectedJob = mnJob.copy(id = 1L)
+      mnJobBoardApi.stubCreateJob(expectedJob, expectedJob.id!!)
+
+      val actualJob = CreateJobRequest.from(mnJob).let { apiWebClient.createJob(it) }
+
+      assertThat(actualJob).isEqualTo(expectedJob)
+    }
+
+    @Test
+    fun `receive unauthorised error, if API access token is invalid`() {
+      mnJobBoardApi.stubCreateJobUnauthorised()
+
+      val exception = assertFailsWith<Exception> {
+        CreateJobRequest.from(mnJob).let { apiWebClient.createJob(it) }
+      }
+
+      with(exception) {
+        assertThat(message).contains("Fail to create job") // reactive throw (ReactiveException)
+        with(cause!!) {
+          assertThat(message).contains("Fail to create job") // actual throw (Exception)
           with(cause!!) {
             assertThat(message).contains("401 Unauthorized") // cause (401) (WebClientResponseException$Unauthorized)
           }
