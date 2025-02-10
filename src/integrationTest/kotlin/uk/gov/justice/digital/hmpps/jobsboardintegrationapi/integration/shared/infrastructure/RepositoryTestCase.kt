@@ -16,9 +16,18 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerExternalIdRepository
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.employerSectorIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.employerStatusIdMap
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.config.TestJpaConfig
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.testcontainers.PostgresContainer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobExternalIdRepository
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.baseLocationIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.contractTypeIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.hoursPerWeekIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.jobSourceIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.offenceExclusionIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.salaryPeriodIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.workPatternIdMap
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMapping
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMappingKey
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMappingRepository
@@ -83,89 +92,15 @@ abstract class RepositoryTestCase {
 
   private val refDataMappingsForTests: List<RefDataMapping>
     get() = mapOf(
-      "employer_status" to mapOf(
-        "KEY_PARTNER" to 1,
-        "GOLD" to 2,
-        "SILVER" to 3,
-      ),
-      "employer_sector" to mapOf(
-        "ADMIN_SUPPORT" to 14,
-        "AGRICULTURE" to 1,
-        "ARTS_ENTERTAINMENT" to 18,
-        "CONSTRUCTION" to 6,
-        "EDUCATION" to 16,
-        "ENERGY" to 4,
-        "FINANCE" to 11,
-        "HEALTH_SOCIAL" to 17,
-        "HOSPITALITY_CATERING" to 9,
-        "LOGISTICS" to 8,
-        "MANUFACTURING" to 3,
-        "MINING" to 2,
-        "OTHER" to 19,
-        "PROFESSIONALS_SCIENTISTS_TECHNICIANS" to 13,
-        "PROPERTY" to 12,
-        "PUBLIC_ADMIN_DEFENCE" to 15,
-        "WASTE_MANAGEMENT" to 5,
-        "RETAIL" to 7,
-        "TECHNOLOGY" to 10,
-      ),
-      "job_source" to mapOf(
-        "DWP" to 4,
-        "EAB" to 14,
-        "EDUCATION" to 15,
-        "IAG" to 8,
-        "NFN" to 1,
-        "PRISON" to 16,
-        "THIRD_SECTOR" to 10,
-        "PEL" to 2,
-        "OTHER" to 11,
-      ),
-      "salary_period" to mapOf(
-        "PER_DAY" to 2,
-        "PER_FORTNIGHT" to 4,
-        "PER_HOUR" to 1,
-        "PER_MONTH" to 5,
-        "PER_WEEK" to 3,
-        "PER_YEAR" to 6,
-        "PER_YEAR_PRO_RATA" to 7,
-      ),
-      "work_pattern" to mapOf(
-        "ANNUALISED_HOURS" to 1,
-        "COMPRESSED_HOURS" to 2,
-        "FLEXI_TIME" to 3,
-        "FLEXIBLE_SHIFTS" to 4,
-        "JOB_SHARE" to 5,
-        "STAGGERED_HOURS" to 6,
-        "TERM_TIME_HOURS" to 7,
-        "UNSOCIABLE_HOURS" to 8,
-      ),
-      "contract_type" to mapOf(
-        "FIXED_TERM_CONTRACT" to 4,
-        "PERMANENT" to 1,
-        "SELF_EMPLOYMENT" to 3,
-        "TEMPORARY" to 2,
-      ),
-      "hours_per_week" to mapOf(
-        "FULL_TIME" to 2,
-        "FULL_TIME_40_PLUS" to 1,
-        "PART_TIME" to 3,
-        "ZERO_HOURS" to 4,
-      ),
-      "base_location" to mapOf(
-        "REMOTE" to 1,
-        "HYBRID" to 3,
-        "WORKPLACE" to 2,
-      ),
-      "offence_exclusion" to mapOf(
-        "NONE" to 1,
-        "CASE_BY_CASE" to 15,
-        "ARSON" to 16,
-        "DRIVING" to 17,
-        "MURDER" to 18,
-        "SEXUAL" to 3,
-        "TERRORISM" to 19,
-        "OTHER" to 14,
-      ),
+      "employer_status" to employerStatusIdMap,
+      "employer_sector" to employerSectorIdMap,
+      "job_source" to jobSourceIdMap,
+      "salary_period" to salaryPeriodIdMap,
+      "work_pattern" to workPatternIdMap,
+      "contract_type" to contractTypeIdMap,
+      "hours_per_week" to hoursPerWeekIdMap,
+      "base_location" to baseLocationIdMap,
+      "offence_exclusion" to offenceExclusionIdMap,
     ).map { (refData, mapping) -> mapping.map { (value, externalId) -> RefDataMapping(refData, value, externalId) } }
       .flatten()
 }
