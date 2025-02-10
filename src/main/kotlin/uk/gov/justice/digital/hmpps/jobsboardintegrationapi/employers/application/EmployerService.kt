@@ -6,8 +6,8 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerExternalId
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerExternalIdRepository
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData
-import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EmployerSector
-import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EmployerStatus
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EMPLOYER_SECTOR
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EMPLOYER_STATUS
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMappingRepository
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.JobsBoardApiClient
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.MNJobBoardApiClient
@@ -61,8 +61,8 @@ class EmployerService(
       id = id,
       employerName = name,
       employerBio = description,
-      sectorId = translateId(EmployerSector, sector),
-      partnerId = translateId(EmployerStatus, status),
+      sectorId = translateId(EMPLOYER_SECTOR, sector),
+      partnerId = translateId(EMPLOYER_STATUS, status),
     )
   }
 

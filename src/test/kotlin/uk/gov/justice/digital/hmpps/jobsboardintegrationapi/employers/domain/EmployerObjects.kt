@@ -43,7 +43,7 @@ internal object EmployerObjects {
     status = "SILVER",
   )
 
-  val statusToPartnerIdMap: Map<String, Int> by lazy {
+  val employerStatusIdMap: Map<String, Int> by lazy {
     mapOf(
       "KEY_PARTNER" to 1,
       "GOLD" to 2,
@@ -51,7 +51,7 @@ internal object EmployerObjects {
     )
   }
 
-  val sectorToIdMap: Map<String, Int> by lazy {
+  val employerSectorIdMap: Map<String, Int> by lazy {
     mapOf(
       "ADMIN_SUPPORT" to 14,
       "AGRICULTURE" to 1,
@@ -79,7 +79,7 @@ internal object EmployerObjects {
     id = externalId,
     employerName = name,
     employerBio = description,
-    sectorId = sectorToIdMap[sector]!!,
-    partnerId = statusToPartnerIdMap[status]!!,
+    sectorId = employerSectorIdMap[sector]!!,
+    partnerId = employerStatusIdMap[status]!!,
   )
 }
