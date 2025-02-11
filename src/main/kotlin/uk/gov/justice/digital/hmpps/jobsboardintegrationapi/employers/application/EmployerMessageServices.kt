@@ -41,8 +41,7 @@ abstract class EmployerMessageService(
 
   protected abstract fun handleEvent(employerEvent: EmployerEvent)
 
-  private fun IntegrationEvent.toEmployerEvent(): EmployerEvent =
-    objectMapper.readValue(message, EmployerEvent::class.java)
+  private fun IntegrationEvent.toEmployerEvent(): EmployerEvent = objectMapper.readValue(message, EmployerEvent::class.java)
 }
 
 class EmployerCreationMessageService(

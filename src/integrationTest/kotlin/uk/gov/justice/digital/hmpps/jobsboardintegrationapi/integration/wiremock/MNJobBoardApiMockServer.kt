@@ -18,11 +18,9 @@ private const val EMPLOYERS_ENDPOINT = "/employers"
 private const val JOBS_ENDPOINT = "/jobs-prison-leavers"
 
 class MNJobBoardApiMockServer : WireMockServer(8093) {
-  fun stubCreateEmployer(mnEmployer: MNEmployer, newId: Long) =
-    stubPostWithReply(EMPLOYERS_ENDPOINT, mnEmployer.copy(id = newId).response())
+  fun stubCreateEmployer(mnEmployer: MNEmployer, newId: Long) = stubPostWithReply(EMPLOYERS_ENDPOINT, mnEmployer.copy(id = newId).response())
 
-  fun stubUpdateEmployer(mnEmployer: MNEmployer) =
-    stubPostWithReply("$EMPLOYERS_ENDPOINT/${mnEmployer.id!!}", mnEmployer.copy().response())
+  fun stubUpdateEmployer(mnEmployer: MNEmployer) = stubPostWithReply("$EMPLOYERS_ENDPOINT/${mnEmployer.id!!}", mnEmployer.copy().response())
 
   fun stubCreateEmployerUnauthorised() = stubPostUnauthorised(EMPLOYERS_ENDPOINT)
 
@@ -86,7 +84,10 @@ class MNJobBoardApiMockServer : WireMockServer(8093) {
   }
 }
 
-class MNJobBoardApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+class MNJobBoardApiExtension :
+  BeforeAllCallback,
+  AfterAllCallback,
+  BeforeEachCallback {
   companion object {
     @JvmField
     val mnJobBoardApi = MNJobBoardApiMockServer()

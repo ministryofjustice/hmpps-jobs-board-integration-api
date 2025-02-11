@@ -59,16 +59,14 @@ data class GetEmployerResponse(
   val createdAt: String,
 ) {
   companion object {
-    fun from(employer: Employer): GetEmployerResponse {
-      return GetEmployerResponse(
-        id = employer.id,
-        name = employer.name,
-        description = employer.description,
-        sector = employer.sector,
-        status = employer.status,
-        createdAt = employer.createdAt.toString(),
-      )
-    }
+    fun from(employer: Employer): GetEmployerResponse = GetEmployerResponse(
+      id = employer.id,
+      name = employer.name,
+      description = employer.description,
+      sector = employer.sector,
+      status = employer.status,
+      createdAt = employer.createdAt.toString(),
+    )
   }
 
   fun employer() = Employer(
@@ -116,46 +114,42 @@ data class GetJobResponse(
   val createdAt: String,
 ) {
   companion object {
-    fun from(job: Job): GetJobResponse {
-      return GetJobResponse(
-        id = job.id,
-        employerId = job.employerId,
-        jobTitle = job.title,
-        sector = job.sector,
-        industrySector = job.industrySector,
-        numberOfVacancies = job.numberOfVacancies,
-        sourcePrimary = job.sourcePrimary,
-        sourceSecondary = job.sourceSecondary,
-        charityName = job.charityName,
-        postCode = job.postcode,
-        salaryFrom = job.salaryFrom,
-        salaryTo = job.salaryTo,
-        salaryPeriod = job.salaryPeriod,
-        additionalSalaryInformation = job.additionalSalaryInformation,
-        isPayingAtLeastNationalMinimumWage = job.isPayingAtLeastNationalMinimumWage,
-        workPattern = job.workPattern,
-        hoursPerWeek = job.hoursPerWeek,
-        contractType = job.contractType,
-        baseLocation = job.baseLocation,
-        essentialCriteria = job.essentialCriteria,
-        desirableCriteria = job.desirableCriteria,
-        description = job.description,
-        offenceExclusions = job.offenceExclusions.asList(),
-        offenceExclusionsDetails = job.offenceExclusionsDetails,
-        isRollingOpportunity = job.isRollingOpportunity,
-        closingDate = job.closingDate?.toString(),
-        isOnlyForPrisonLeavers = job.isOnlyForPrisonLeavers,
-        startDate = job.startDate?.toString(),
-        howToApply = job.howToApply,
-        supportingDocumentationRequired = job.supportingDocumentationRequired?.asList(),
-        supportingDocumentationDetails = job.supportingDocumentationDetails,
-        createdAt = job.createdAt.toString(),
-      )
-    }
+    fun from(job: Job): GetJobResponse = GetJobResponse(
+      id = job.id,
+      employerId = job.employerId,
+      jobTitle = job.title,
+      sector = job.sector,
+      industrySector = job.industrySector,
+      numberOfVacancies = job.numberOfVacancies,
+      sourcePrimary = job.sourcePrimary,
+      sourceSecondary = job.sourceSecondary,
+      charityName = job.charityName,
+      postCode = job.postcode,
+      salaryFrom = job.salaryFrom,
+      salaryTo = job.salaryTo,
+      salaryPeriod = job.salaryPeriod,
+      additionalSalaryInformation = job.additionalSalaryInformation,
+      isPayingAtLeastNationalMinimumWage = job.isPayingAtLeastNationalMinimumWage,
+      workPattern = job.workPattern,
+      hoursPerWeek = job.hoursPerWeek,
+      contractType = job.contractType,
+      baseLocation = job.baseLocation,
+      essentialCriteria = job.essentialCriteria,
+      desirableCriteria = job.desirableCriteria,
+      description = job.description,
+      offenceExclusions = job.offenceExclusions.asList(),
+      offenceExclusionsDetails = job.offenceExclusionsDetails,
+      isRollingOpportunity = job.isRollingOpportunity,
+      closingDate = job.closingDate?.toString(),
+      isOnlyForPrisonLeavers = job.isOnlyForPrisonLeavers,
+      startDate = job.startDate?.toString(),
+      howToApply = job.howToApply,
+      supportingDocumentationRequired = job.supportingDocumentationRequired?.asList(),
+      supportingDocumentationDetails = job.supportingDocumentationDetails,
+      createdAt = job.createdAt.toString(),
+    )
 
-    private fun String.asList(): List<String> {
-      return this.split(",").map { it.trim() }.toList()
-    }
+    private fun String.asList(): List<String> = this.split(",").map { it.trim() }.toList()
   }
 
   fun job() = Job(

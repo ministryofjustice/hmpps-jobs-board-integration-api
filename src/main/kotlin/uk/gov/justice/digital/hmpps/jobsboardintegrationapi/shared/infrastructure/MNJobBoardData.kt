@@ -9,8 +9,7 @@ data class CreateEmployerRequest(
   val path: String? = null,
 ) {
   companion object {
-    fun from(employer: MNEmployer) =
-      employer.run { CreateEmployerRequest(employerName, employerBio, sectorId, partnerId, imgName, path) }
+    fun from(employer: MNEmployer) = employer.run { CreateEmployerRequest(employerName, employerBio, sectorId, partnerId, imgName, path) }
   }
 }
 
@@ -26,8 +25,7 @@ data class UpdateEmployerRequest(
   val path: String? = null,
 ) {
   companion object {
-    fun from(employer: MNEmployer) =
-      employer.run { UpdateEmployerRequest(id!!, employerName, employerBio, sectorId, partnerId, imgName, path) }
+    fun from(employer: MNEmployer) = employer.run { UpdateEmployerRequest(id!!, employerName, employerBio, sectorId, partnerId, imgName, path) }
   }
 }
 
@@ -236,8 +234,7 @@ typealias UpdateJobResponse = MNJob
 typealias MNCreateEmployerResponse = MNCreateOrUpdateEmployerResponse
 typealias MNUpdateEmployerResponse = MNCreateOrUpdateEmployerResponse
 
-class MNCreateOrUpdateEmployerResponse(message: MNMessage, responseObject: MNEmployer) :
-  MNCreateOrUpdateDataResponse<MNEmployer>(message, responseObject)
+class MNCreateOrUpdateEmployerResponse(message: MNMessage, responseObject: MNEmployer) : MNCreateOrUpdateDataResponse<MNEmployer>(message, responseObject)
 
 typealias MNCreateJobRequest = MNJob
 typealias MNCreateJobResponse = MNCreateOrUpdateJobResponse
@@ -245,8 +242,7 @@ typealias MNCreateJobResponse = MNCreateOrUpdateJobResponse
 typealias MNUpdateJobRequest = MNJob
 typealias MNUpdateJobResponse = MNCreateOrUpdateJobResponse
 
-class MNCreateOrUpdateJobResponse(message: MNMessage, responseObject: MNJob) :
-  MNCreateOrUpdateDataResponse<MNJob>(message, responseObject)
+class MNCreateOrUpdateJobResponse(message: MNMessage, responseObject: MNJob) : MNCreateOrUpdateDataResponse<MNJob>(message, responseObject)
 
 abstract class MNCreateOrUpdateDataResponse<T>(val message: MNMessage, val responseObject: T)
 

@@ -37,7 +37,10 @@ class JobsBoardApiMockServer : WireMockServer(8092) {
   }
 }
 
-class JobsBoardApiExtension : BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
+class JobsBoardApiExtension :
+  BeforeAllCallback,
+  AfterAllCallback,
+  BeforeEachCallback {
   companion object {
     @JvmField
     val jobsBoardApi = JobsBoardApiMockServer()

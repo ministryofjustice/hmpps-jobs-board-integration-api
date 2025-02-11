@@ -25,8 +25,7 @@ class JobsBoardApiWebClientShould : JobsBoardApiWebClientTestBase() {
       assertThat(actualEmployer).isEqualTo(employer)
     }
 
-    private fun replyOnGetEmployerById(response: GetEmployerResponse, employerId: String) =
-      replyOnRequestById(response.javaClass, response, uri, employerId)
+    private fun replyOnGetEmployerById(response: GetEmployerResponse, employerId: String) = replyOnRequestById(response.javaClass, response, uri, employerId)
   }
 
   @Nested
@@ -43,7 +42,6 @@ class JobsBoardApiWebClientShould : JobsBoardApiWebClientTestBase() {
       assertThat(actualJob).isEqualTo(job)
     }
 
-    private fun replyOnGetJobById(response: GetJobResponse, jobId: String) =
-      replyOnRequestById(response.javaClass, response, uri, jobId)
+    private fun replyOnGetJobById(response: GetJobResponse, jobId: String) = replyOnRequestById(response.javaClass, response, uri, jobId)
   }
 }

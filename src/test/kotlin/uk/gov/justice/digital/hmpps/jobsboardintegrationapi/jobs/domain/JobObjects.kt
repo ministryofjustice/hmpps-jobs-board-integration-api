@@ -201,9 +201,7 @@ internal object JobObjects {
     "OTHER" to 14,
   )
 
-  fun builder(): JobBuilder {
-    return JobBuilder()
-  }
+  fun builder(): JobBuilder = JobBuilder()
 }
 
 class JobBuilder {
@@ -310,44 +308,42 @@ class JobBuilder {
     return this
   }
 
-  fun build(): Job {
-    return Job(
-      id = this.id,
-      title = this.title,
-      sector = this.sector,
-      industrySector = this.industrySector,
-      numberOfVacancies = this.numberOfVacancies,
-      sourcePrimary = this.sourcePrimary,
-      sourceSecondary = this.sourceSecondary,
-      charityName = this.charityName,
-      postcode = this.postcode,
-      salaryFrom = this.salaryFrom,
-      salaryTo = this.salaryTo,
-      salaryPeriod = this.salaryPeriod,
-      additionalSalaryInformation = this.additionalSalaryInformation,
-      isPayingAtLeastNationalMinimumWage = this.isPayingAtLeastNationalMinimumWage,
-      workPattern = this.workPattern,
-      hoursPerWeek = this.hoursPerWeek,
-      contractType = this.contractType,
-      baseLocation = this.baseLocation,
-      essentialCriteria = this.essentialCriteria,
-      desirableCriteria = this.desirableCriteria,
-      description = this.description,
-      offenceExclusions = this.offenceExclusions,
-      offenceExclusionsDetails = this.offenceExclusionsDetails,
-      isRollingOpportunity = this.isRollingOpportunity,
-      closingDate = this.closingDate,
-      isOnlyForPrisonLeavers = this.isOnlyForPrisonLeavers,
-      startDate = this.startDate,
-      howToApply = this.howToApply,
-      supportingDocumentationRequired = this.supportingDocumentationRequired,
-      supportingDocumentationDetails = this.supportingDocumentationDetails,
-      employerId = this.employerId,
-      expressionsOfInterest = this.expressionsOfInterest,
-    ).also { job ->
-      job.expressionsOfInterest.forEach { (_, eoi) -> eoi.job = job }
-      this.employer?.let { job.employer = this.employer }
-    }
+  fun build(): Job = Job(
+    id = this.id,
+    title = this.title,
+    sector = this.sector,
+    industrySector = this.industrySector,
+    numberOfVacancies = this.numberOfVacancies,
+    sourcePrimary = this.sourcePrimary,
+    sourceSecondary = this.sourceSecondary,
+    charityName = this.charityName,
+    postcode = this.postcode,
+    salaryFrom = this.salaryFrom,
+    salaryTo = this.salaryTo,
+    salaryPeriod = this.salaryPeriod,
+    additionalSalaryInformation = this.additionalSalaryInformation,
+    isPayingAtLeastNationalMinimumWage = this.isPayingAtLeastNationalMinimumWage,
+    workPattern = this.workPattern,
+    hoursPerWeek = this.hoursPerWeek,
+    contractType = this.contractType,
+    baseLocation = this.baseLocation,
+    essentialCriteria = this.essentialCriteria,
+    desirableCriteria = this.desirableCriteria,
+    description = this.description,
+    offenceExclusions = this.offenceExclusions,
+    offenceExclusionsDetails = this.offenceExclusionsDetails,
+    isRollingOpportunity = this.isRollingOpportunity,
+    closingDate = this.closingDate,
+    isOnlyForPrisonLeavers = this.isOnlyForPrisonLeavers,
+    startDate = this.startDate,
+    howToApply = this.howToApply,
+    supportingDocumentationRequired = this.supportingDocumentationRequired,
+    supportingDocumentationDetails = this.supportingDocumentationDetails,
+    employerId = this.employerId,
+    expressionsOfInterest = this.expressionsOfInterest,
+  ).also { job ->
+    job.expressionsOfInterest.forEach { (_, eoi) -> eoi.job = job }
+    this.employer?.let { job.employer = this.employer }
   }
 }
 
