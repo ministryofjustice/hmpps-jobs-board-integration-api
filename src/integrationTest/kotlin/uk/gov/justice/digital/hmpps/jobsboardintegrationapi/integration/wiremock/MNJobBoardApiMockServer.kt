@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.matching
 import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.put
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
@@ -31,6 +32,13 @@ class MNJobBoardApiMockServer : WireMockServer(8093) {
 
   fun stubCreateJobUnauthorised() = stubPostUnauthorised(JOBS_ENDPOINT)
 
+  fun stubUpdateJob(mnJob: MNJob) {
+    requireNotNull(mnJob.id) { "Job external ID is missing" }
+    stubPutWithReply(JOBS_ENDPOINT, mnJob.response())
+  }
+
+  fun stubUpdateJobUnauthorised() = stubPutUnauthorised(JOBS_ENDPOINT)
+
   private fun stubPostWithReply(url: String, replyBody: String) {
     stubFor(
       post(url)
@@ -46,6 +54,29 @@ class MNJobBoardApiMockServer : WireMockServer(8093) {
   private fun stubPostUnauthorised(url: String) {
     stubFor(
       post(url)
+        .withHeader("Authorization", matching("^Bearer .+\$"))
+        .willReturn(
+          aResponse()
+            .withStatus(401),
+        ),
+    )
+  }
+
+  private fun stubPutWithReply(url: String, replyBody: String) {
+    stubFor(
+      put(url)
+        .withHeader("Authorization", matching("^Bearer .+\$"))
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(replyBody),
+        ),
+    )
+  }
+
+  private fun stubPutUnauthorised(url: String) {
+    stubFor(
+      put(url)
         .withHeader("Authorization", matching("^Bearer .+\$"))
         .willReturn(
           aResponse()

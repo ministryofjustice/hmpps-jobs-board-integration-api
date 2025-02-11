@@ -6,6 +6,8 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructur
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateJobResponse
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateEmployerRequest
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateEmployerResponse
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateJobRequest
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateJobResponse
 
 interface MNJobBoardApiClient {
   fun createEmployer(request: CreateEmployerRequest): CreateEmployerResponse
@@ -13,4 +15,6 @@ interface MNJobBoardApiClient {
   fun updateEmployer(request: UpdateEmployerRequest): UpdateEmployerResponse
 
   fun createJob(request: CreateJobRequest): CreateJobResponse
+
+  fun updateJob(request: UpdateJobRequest): UpdateJobResponse
 }

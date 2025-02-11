@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDa
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application.ServiceTestCase
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateJobRequest
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNJob
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateJobRequest
 import kotlin.test.assertFailsWith
 
 class JobRegistrarShould : ServiceTestCase() {
@@ -123,11 +124,92 @@ class JobRegistrarShould : ServiceTestCase() {
     }
   }
 
+  @Nested
+  @DisplayName("Given an existing job to be updated to MN")
+  inner class GivenAJobToUpdate {
+    private val job = amazonForkliftOperator.run { copy(description = "$description |updated") }
+    private val employerExternalId = 2002L
+    private val externalId = 101L
+    private val mnJob = job.mnJob(employerExternalId, externalId)
+    private val updateJobRequest = UpdateJobRequest.from(mnJob)
+
+    @Test
+    fun `update a registered job`() {
+      givenAJobToUpdate(job, mnJob)
+
+      jobRegistrar.registerUpdate(job)
+
+      verify(mnJobBoardApiClient).updateJob(updateJobRequest)
+    }
+
+    @Test
+    fun `throw exception, when external ID has been changed unexpectedly`() {
+      givenAJobToUpdate(job, mnJob, mnJob.copy(id = 999L))
+
+      val exception = assertFailsWith<Exception> {
+        jobRegistrar.registerUpdate(job)
+      }
+
+      with(exception) {
+        assertThat(message).startsWith("Fail to register job-update").contains("jobId=${job.id}")
+        with(cause!!) {
+          assertThat(this).isInstanceOfAny(AssertionError::class.java)
+          assertThat(message).startsWith("MN Job ID has changed!").contains("jobId=${job.id}")
+        }
+      }
+    }
+
+    @Test
+    fun `throw exception, with error from conversion`() {
+      val expectedException = IllegalStateException("Job with id=${job.id} not found (ID mapping missing)")
+      whenever(jobExternalIdRepository.findByKeyId(job.id)).thenReturn(null)
+
+      val actualException = assertFailsWith<Exception> {
+        jobRegistrar.registerUpdate(job)
+      }
+
+      with(actualException) {
+        assertThat(message).startsWith("Fail to register job-update").contains("jobId=${job.id}")
+        with(cause!!) {
+          assertThat(this).isInstanceOfAny(expectedException.javaClass)
+          assertThat(message).isEqualTo(expectedException.message)
+        }
+      }
+    }
+
+    @Test
+    fun `throw exception, with error from updating downstream system`() {
+      givenAJobToUpdate(job, mnJob)
+      val expectedException = "some errors while updating".let {
+        RuntimeException("Fail to update job! errorResponse=$it", RuntimeException(it))
+      }
+      whenever(mnJobBoardApiClient.updateJob(updateJobRequest)).thenThrow(expectedException)
+
+      val actualException = assertFailsWith<Throwable> {
+        jobRegistrar.registerUpdate(job)
+      }
+
+      with(actualException) {
+        assertThat(message).startsWith("Fail to register job-update").contains("jobId=${job.id}")
+        with(cause!!) {
+          assertThat(message).isEqualTo(expectedException.message)
+        }
+      }
+    }
+  }
+
   private fun givenAJobToCreate(job: Job, mnJob: MNJob, mnJobCreated: MNJob = mnJob) {
     givenJobExternalIDNotExist(job.id)
     givenEmployerExternalIDExists(job.employerId, mnJob.employerId)
     givenRefDataMappings(job)
     whenever(mnJobBoardApiClient.createJob(CreateJobRequest.from(mnJob))).thenReturn(mnJobCreated)
+  }
+
+  private fun givenAJobToUpdate(job: Job, mnJob: MNJob, mnJobUpdated: MNJob = mnJob) {
+    givenJobExternalIDExists(job.id, mnJob.id!!)
+    givenEmployerExternalIDExists(job.employerId, mnJob.employerId)
+    givenRefDataMappings(job)
+    whenever(mnJobBoardApiClient.updateJob(UpdateJobRequest.from(mnJob))).thenReturn(mnJobUpdated)
   }
 
   private fun givenJobExternalIDExists(id: String, externalId: Long) {
