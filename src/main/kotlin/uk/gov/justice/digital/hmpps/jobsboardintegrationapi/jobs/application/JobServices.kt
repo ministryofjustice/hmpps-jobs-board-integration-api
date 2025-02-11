@@ -117,17 +117,20 @@ class JobRegistrar(
       jobTypeId = 1,
       charityId = null,
       excludingOffences = MNExcludingOffences(
-        choiceIds = offenceExclusions.split(",").map { translateId(OFFENCE_EXCLUSION, it.uppercase()) },
+        choiceIds = offenceExclusions.split(",").map { translateOptionalId(OFFENCE_EXCLUSION, it.uppercase()) }
+          .filterNotNull(),
         other = offenceExclusionsDetails,
       ),
       jobSourceOneId = translateId(JOB_SOURCE, sourcePrimary),
-      jobSourceTwoList = sourceSecondary?.let { listOf(translateId(JOB_SOURCE, it)) },
+      jobSourceTwoList = sourceSecondary.let {
+        if (!it.isNullOrEmpty()) listOf(translateOptionalId(JOB_SOURCE, it)!!) else null
+      },
       employerSectorId = translateId(EMPLOYER_SECTOR, industrySector),
       workPatternId = translateId(WORK_PATTERN, workPattern),
       contractTypeId = translateId(CONTRACT_TYPE, contractType),
       hoursId = translateId(HOURS_PER_WEEK, hoursPerWeek),
       rollingOpportunity = isRollingOpportunity,
-      baseLocationId = baseLocation?.let { translateId(BASE_LOCATION, it) },
+      baseLocationId = baseLocation?.let { translateOptionalId(BASE_LOCATION, it) },
       postcode = postcode,
       salaryFrom = salaryFrom.toString(),
       salaryTo = salaryTo?.toString(),
@@ -147,6 +150,9 @@ class JobRegistrar(
     employerExternalIdRepository.findByKeyId(employerId)?.key?.externalId.also {
       assert(it != null) { "Employer external ID is not found for employerId=$employerId" }
     }!!
+
+  private fun translateOptionalId(refData: RefData, value: String?) =
+    value?.let { if (it.isNotEmpty()) translateId(refData, it) else null }
 
   private fun translateId(refData: RefData, value: String) =
     refDataMappingRepository.findByDataRefDataIgnoreCaseAndDataValueIgnoreCase(refData.type, value)?.data?.externalId ?: run {

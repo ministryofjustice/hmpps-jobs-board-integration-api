@@ -59,7 +59,7 @@ internal object JobObjects {
     industrySector = "LOGISTICS",
     numberOfVacancies = 2,
     sourcePrimary = "PEL",
-    sourceSecondary = null,
+    sourceSecondary = "",
     charityName = "",
     postcode = "LS12 1AA",
     salaryFrom = 11.93f,
@@ -70,7 +70,7 @@ internal object JobObjects {
     workPattern = "FLEXIBLE_SHIFTS",
     hoursPerWeek = "FULL_TIME",
     contractType = "TEMPORARY",
-    baseLocation = "WORKPLACE",
+    baseLocation = "",
     essentialCriteria = "",
     desirableCriteria = "",
     description = """

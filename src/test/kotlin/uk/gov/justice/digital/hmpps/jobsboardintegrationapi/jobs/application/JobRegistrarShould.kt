@@ -253,8 +253,8 @@ class JobRegistrarShould : ServiceTestCase() {
     salaryPeriod: String,
     baseLocation: String?,
   ) {
-    offenceExclusions.forEach { givenRefDataIdMapping(OFFENCE_EXCLUSION.type, it) }
-    jobSources.forEach { givenRefDataIdMapping(JOB_SOURCE.type, it) }
+    offenceExclusions.filter { it.isNotEmpty() }.forEach { givenRefDataIdMapping(OFFENCE_EXCLUSION.type, it) }
+    jobSources.filter { it.isNotEmpty() }.forEach { givenRefDataIdMapping(JOB_SOURCE.type, it) }
 
     givenRefDataIdMapping(EMPLOYER_SECTOR.type, employerSector)
     givenRefDataIdMapping(WORK_PATTERN.type, workPattern)
@@ -262,6 +262,6 @@ class JobRegistrarShould : ServiceTestCase() {
     givenRefDataIdMapping(HOURS_PER_WEEK.type, hoursPerWeek)
     givenRefDataIdMapping(SALARY_PERIOD.type, salaryPeriod)
 
-    baseLocation?.let { givenRefDataIdMapping(BASE_LOCATION.type, baseLocation) }
+    if (!baseLocation.isNullOrEmpty()) givenRefDataIdMapping(BASE_LOCATION.type, baseLocation)
   }
 }
