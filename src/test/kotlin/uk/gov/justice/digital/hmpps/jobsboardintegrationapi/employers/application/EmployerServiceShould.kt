@@ -14,8 +14,8 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.mnEmployer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.sainsburys
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.tesco
-import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EmployerSector
-import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EmployerStatus
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EMPLOYER_SECTOR
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EMPLOYER_STATUS
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application.ServiceTestCase
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateEmployerRequest
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateEmployerRequest
@@ -179,7 +179,7 @@ class EmployerServiceShould : ServiceTestCase() {
   inner class GivenInvalidEmployer {
     @Test
     fun `NOT convert employer to MN, with invalid status`() {
-      val refData = EmployerStatus.type
+      val refData = EMPLOYER_STATUS.type
       val invalidStatus = "INVALID"
       val invalidEmployer = employer.copy(
         id = randomUUID(),
@@ -197,13 +197,13 @@ class EmployerServiceShould : ServiceTestCase() {
 
     @Test
     fun `NOT convert employer to MN, with invalid sector`() {
-      val refData = EmployerSector.type
+      val refData = EMPLOYER_SECTOR.type
       val invalidSector = "INVALID"
       val invalidEmployer = employer.copy(
         id = randomUUID(),
         sector = invalidSector,
       )
-      givenRefDataIdMapping(EmployerSector.type, invalidEmployer.sector)
+      givenRefDataIdMapping(EMPLOYER_SECTOR.type, invalidEmployer.sector)
 
       val exception = assertFailsWith<IllegalArgumentException> {
         employerService.convert(invalidEmployer)
@@ -224,7 +224,7 @@ class EmployerServiceShould : ServiceTestCase() {
   }
 
   private fun givenRefDataMappings(employerStatus: String, employerSector: String) {
-    givenRefDataIdMapping(EmployerStatus.type, employerStatus)
-    givenRefDataIdMapping(EmployerSector.type, employerSector)
+    givenRefDataIdMapping(EMPLOYER_STATUS.type, employerStatus)
+    givenRefDataIdMapping(EMPLOYER_SECTOR.type, employerSector)
   }
 }

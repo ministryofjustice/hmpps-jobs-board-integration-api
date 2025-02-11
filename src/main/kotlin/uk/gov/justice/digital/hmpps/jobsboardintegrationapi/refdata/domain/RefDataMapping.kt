@@ -30,7 +30,7 @@ data class RefDataMappingKey(
 interface RefDataMappingRepository : ReadOnlyRepository<RefDataMapping, RefDataMappingKey> {
   fun findByDataRefData(refData: String): List<RefDataMapping>
 
-  fun findByDataRefDataAndDataValue(refData: String, dataValue: String): RefDataMapping?
+  fun findByDataRefDataIgnoreCaseAndDataValueIgnoreCase(refData: String, dataValue: String): RefDataMapping?
 
-  fun findByDataRefDataAndDataExternalId(refData: String, dataExternalId: Int): RefDataMapping?
+  fun findByDataRefDataIgnoreCaseAndDataExternalId(refData: String, dataExternalId: Int): RefDataMapping?
 }

@@ -61,7 +61,7 @@ internal object JobObjects {
     industrySector = "LOGISTICS",
     numberOfVacancies = 2,
     sourcePrimary = "PEL",
-    sourceSecondary = "",
+    sourceSecondary = null,
     charityName = "",
     postcode = "LS12 1AA",
     salaryFrom = 11.93f,
