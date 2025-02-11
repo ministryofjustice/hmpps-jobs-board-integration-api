@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.MNJobB
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateJobRequest
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNExcludingOffences
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNJob
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateJobRequest
 
 @ConditionalOnIntegrationEnabled
 @Service
@@ -53,12 +54,26 @@ class JobRegistrar(
     } else {
       try {
         val mnJob = create(convert(job))
-        assert(mnJob.id != null) { "MN Job ID is missing! jobId=${job.id}, jobName=${job.title}" }
+        assert(mnJob.id != null) { "MN Job ID is missing! jobId=${job.id}, jobTitle=${job.title}" }
         createIdMapping(mnJob.id!!, job.id)
       } catch (throwable: Throwable) {
-        "Fail to register job-creation; jobId=${job.id}, jobName=${job.title}".let { message ->
+        "Fail to register job-creation; jobId=${job.id}, jobTitle=${job.title}".let { message ->
           throw Exception(message, throwable)
         }
+      }
+    }
+  }
+
+  fun registerUpdate(job: Job) {
+    try {
+      val pendingUpdate = convertExisting(job)
+      val updated = update(pendingUpdate)
+      assert(updated.id == pendingUpdate.id) {
+        "MN Job ID has changed! jobId=${job.id}, jobTitle=${job.title}; previous ID=${pendingUpdate.id}, new ID=${updated.id}"
+      }
+    } catch (throwable: Throwable) {
+      "Fail to register job-update; jobId=${job.id}, jobTitle=${job.title}".let { message ->
+        throw Exception(message, throwable)
       }
     }
   }
@@ -68,7 +83,21 @@ class JobRegistrar(
     return mnJobBoardApiClient.createJob(request)
   }
 
+  private fun update(mnJob: MNJob): MNJob {
+    val request = UpdateJobRequest.from(mnJob)
+    return mnJobBoardApiClient.updateJob(request)
+  }
+
   private fun convert(newJob: Job) = convertAndMapId(newJob, retrieveEmployerExternalIdById(newJob.employerId))
+
+  private fun convertExisting(existingJob: Job): MNJob {
+    val extId = retrieveExternalIdById(existingJob.id)
+    return if (extId != null) {
+      convertAndMapId(existingJob, retrieveEmployerExternalIdById(existingJob.employerId), extId)
+    } else {
+      throw IllegalStateException("Job with id=${existingJob.id} not found (ID mapping missing)")
+    }
+  }
 
   private fun existsIdMappingById(id: String): Boolean = retrieveExternalIdById(id) != null
 

@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.application.JobCreationMessageService
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.application.JobRegistrar
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.application.JobRetriever
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.application.JobUpdateMessageService
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobEventType
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.IntegrationMessageService
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.IntegrationMessageListener
@@ -25,10 +26,12 @@ class IntegrationConfiguration {
     employerCreationMessageService: EmployerCreationMessageService,
     employerUpdateMessageService: EmployerUpdateMessageService,
     jobCreationMessageService: JobCreationMessageService,
+    jobUpdateMessageService: JobUpdateMessageService,
   ): Map<String, IntegrationMessageService> = mapOf(
     EmployerEventType.EMPLOYER_CREATED.type to employerCreationMessageService,
     EmployerEventType.EMPLOYER_UPDATED.type to employerUpdateMessageService,
     JobEventType.JOB_CREATED.type to jobCreationMessageService,
+    JobEventType.JOB_UPDATED.type to jobUpdateMessageService,
   )
 
   @Bean
@@ -51,6 +54,13 @@ class IntegrationConfiguration {
     registrar: JobRegistrar,
     objectMapper: ObjectMapper,
   ) = JobCreationMessageService(retriever, registrar, objectMapper)
+
+  @Bean
+  fun jobUpdateMessageService(
+    retriever: JobRetriever,
+    registrar: JobRegistrar,
+    objectMapper: ObjectMapper,
+  ) = JobUpdateMessageService(retriever, registrar, objectMapper)
 
   @Bean
   fun integrationMessageListener(

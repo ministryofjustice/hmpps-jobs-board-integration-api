@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.MNJobB
 private const val EMPLOYERS_ENDPOINT = "/employers"
 private const val UPDATE_EMPLOYERS_ENDPOINT = "$EMPLOYERS_ENDPOINT/{id}"
 private const val JOBS_ENDPOINT = "/jobs-prison-leavers"
+private const val UPDATE_JOBS_ENDPOINT = JOBS_ENDPOINT
 
 @ConditionalOnIntegrationEnabled
 @Service
@@ -62,6 +63,20 @@ class MNJobBoardApiWebClient(
       .onErrorResume { error ->
         val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
         Mono.error(Exception("Fail to create job! errorResponse=$errorResponse", error))
+      }.block()!!
+      .responseObject
+  }
+
+  override fun updateJob(request: UpdateJobRequest): UpdateJobResponse {
+    log.debug("Updating job jobTitle={}, employerId={}", request.jobTitle, request.employerId)
+    log.trace("Update job request={}", request)
+    return mnJobBoardWebClient.put().uri(UPDATE_JOBS_ENDPOINT)
+      .accept(APPLICATION_JSON).body(Mono.just(request.mnRequest()), MNUpdateJobRequest::class.java)
+      .retrieve()
+      .bodyToMono(MNUpdateJobResponse::class.java)
+      .onErrorResume { error ->
+        val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
+        Mono.error(Exception("Fail to update job! errorResponse=$errorResponse", error))
       }.block()!!
       .responseObject
   }
