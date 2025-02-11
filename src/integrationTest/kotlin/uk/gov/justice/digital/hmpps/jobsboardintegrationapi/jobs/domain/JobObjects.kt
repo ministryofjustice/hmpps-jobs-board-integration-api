@@ -1,9 +1,21 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Employer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.abcConstruction
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.amazon
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.employerSectorIdMap
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.tesco
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.baseLocationIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.contractTypeIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.hoursPerWeekIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.jobSourceIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.offenceExclusionIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.salaryPeriodIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.workPatternIdMap
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNExcludingOffences
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNJob
 import java.time.LocalDate
 import java.util.*
 
@@ -340,3 +352,43 @@ class JobBuilder {
     }
   }
 }
+
+private val mapper: ObjectMapper = jacksonObjectMapper()
+
+internal fun String.asJson(): String {
+  return mapper.writeValueAsString(this)
+}
+
+internal fun List<Int>.asStringList() = joinToString(separator = ",", prefix = "[", postfix = "]")
+
+internal fun Job.mnJob(employerExtId: Long = 1L) = MNJob(
+  jobTitle = title,
+  jobDescription = description,
+  postingDate = startDate?.toString(),
+  closingDate = closingDate?.toString(),
+  jobTypeId = 1,
+  charityId = null,
+  excludingOffences = MNExcludingOffences(
+    choiceIds = offenceExclusions.split(",").map { offenceExclusionIdMap[it.uppercase()]!! },
+    other = offenceExclusionsDetails,
+  ),
+  employerId = employerExtId,
+  jobSourceOneId = jobSourceIdMap[sourcePrimary]!!,
+  jobSourceTwoList = sourceSecondary?.let { listOf(jobSourceIdMap[it]!!) },
+  employerSectorId = employerSectorIdMap[industrySector]!!,
+  workPatternId = workPatternIdMap[workPattern]!!,
+  contractTypeId = contractTypeIdMap[contractType]!!,
+  hoursId = hoursPerWeekIdMap[hoursPerWeek]!!,
+  rollingOpportunity = isRollingOpportunity,
+  baseLocationId = baseLocationIdMap[baseLocation]!!,
+  postcode = postcode,
+  salaryFrom = salaryFrom.toString(),
+  salaryTo = salaryTo?.toString(),
+  salaryPeriodId = salaryPeriodIdMap[salaryPeriod]!!,
+  additionalSalaryInformation = additionalSalaryInformation,
+  nationalMinimumWage = isPayingAtLeastNationalMinimumWage,
+  ringfencedJob = (if (!isRollingOpportunity) false else null),
+  desirableJobCriteria = desirableCriteria,
+  essentialJobCriteria = essentialCriteria,
+  howToApply = howToApply,
+)
