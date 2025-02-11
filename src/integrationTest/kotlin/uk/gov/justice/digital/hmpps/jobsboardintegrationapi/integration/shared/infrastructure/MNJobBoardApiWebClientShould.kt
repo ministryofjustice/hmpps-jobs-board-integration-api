@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructur
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNJob
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNJobBoardApiWebClient
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateEmployerRequest
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateJobRequest
 import kotlin.test.assertFailsWith
 
 class MNJobBoardApiWebClientShould : IntegrationTestBase() {
@@ -31,7 +32,7 @@ class MNJobBoardApiWebClientShould : IntegrationTestBase() {
   private val mnJob: MNJob get() = job.copy(createdAt = timeProvider.nowAsInstant()).mnJob()
 
   @Nested
-  @DisplayName("MN JobBoard `POST` /employers")
+  @DisplayName("MN JobBoard `POST` /employers ; create employer")
   inner class EmployersPostEndpoint {
     @Test
     fun `create employer, with valid details`() {
@@ -64,7 +65,7 @@ class MNJobBoardApiWebClientShould : IntegrationTestBase() {
   }
 
   @Nested
-  @DisplayName("MN JobBoard `POST` /employers/{id}")
+  @DisplayName("MN JobBoard `POST` /employers/{id} ; update employer")
   inner class EmployerPostEndpoint {
     private val existingEmployer = with(mnEmployer) { copy(id = 1L, employerBio = "$employerBio |updated") }
 
@@ -99,7 +100,7 @@ class MNJobBoardApiWebClientShould : IntegrationTestBase() {
   }
 
   @Nested
-  @DisplayName("MN JobBoard `POST` /jobs-prison-leavers")
+  @DisplayName("MN JobBoard `POST` /jobs-prison-leavers ; create job")
   inner class JobsPostEndpoint {
     @Test
     fun `create job, with valid details`() {
@@ -123,6 +124,40 @@ class MNJobBoardApiWebClientShould : IntegrationTestBase() {
         assertThat(message).contains("Fail to create job") // reactive throw (ReactiveException)
         with(cause!!) {
           assertThat(message).contains("Fail to create job") // actual throw (Exception)
+          with(cause!!) {
+            assertThat(message).contains("401 Unauthorized") // cause (401) (WebClientResponseException$Unauthorized)
+          }
+        }
+      }
+    }
+  }
+
+  @Nested
+  @DisplayName("MN JobBoard `PUT` /jobs-prison-leavers ; update job")
+  inner class JobPutEndpoint {
+    @Test
+    fun `update job, with valid details`() {
+      val expectedJob = mnJob.copy(id = 101L)
+      mnJobBoardApi.stubUpdateJob(expectedJob)
+
+      val actualJob = UpdateJobRequest.from(expectedJob).let { apiWebClient.updateJob(it) }
+
+      assertThat(actualJob).isEqualTo(expectedJob)
+    }
+
+    @Test
+    fun `receive unauthorised error, if API access token is invalid`() {
+      val expectedJob = mnJob.copy(id = 102L)
+      mnJobBoardApi.stubUpdateJobUnauthorised()
+
+      val exception = assertFailsWith<Exception> {
+        UpdateJobRequest.from(expectedJob).let { apiWebClient.updateJob(it) }
+      }
+
+      with(exception) {
+        assertThat(message).contains("Fail to update job") // reactive throw (ReactiveException)
+        with(cause!!) {
+          assertThat(message).contains("Fail to update job") // actual throw (Exception)
           with(cause!!) {
             assertThat(message).contains("401 Unauthorized") // cause (401) (WebClientResponseException$Unauthorized)
           }
