@@ -29,7 +29,7 @@ class RefDataMappingRepositoryShould : RepositoryTestCase() {
     val dataValue = "GOLD"
     val expectedExtId = 2
 
-    val mapping = refDataMappingRepository.findByDataRefDataAndDataValue(refData, dataValue)
+    val mapping = refDataMappingRepository.findByDataRefDataIgnoreCaseAndDataValueIgnoreCase(refData, dataValue)
 
     assertThat(mapping).isNotNull
     assertThat(mapping!!.data.externalId).isEqualTo(expectedExtId)
@@ -41,9 +41,21 @@ class RefDataMappingRepositoryShould : RepositoryTestCase() {
     val dataExternalId = 6
     val expectedDataValue = "CONSTRUCTION"
 
-    val mapping = refDataMappingRepository.findByDataRefDataAndDataExternalId(refData, dataExternalId)
+    val mapping = refDataMappingRepository.findByDataRefDataIgnoreCaseAndDataExternalId(refData, dataExternalId)
     assertThat(mapping).isNotNull
     assertThat(mapping!!.data.value).isEqualTo(expectedDataValue)
+  }
+
+  @Test
+  fun `return correct mapping, regardless of case`() {
+    val refData = "EMPLOYER_STATUS"
+    val dataValue = "gold"
+    val expectedExtId = 2
+
+    val mapping = refDataMappingRepository.findByDataRefDataIgnoreCaseAndDataValueIgnoreCase(refData, dataValue)
+
+    assertThat(mapping).isNotNull
+    assertThat(mapping!!.data.externalId).isEqualTo(expectedExtId)
   }
 
   @Nested

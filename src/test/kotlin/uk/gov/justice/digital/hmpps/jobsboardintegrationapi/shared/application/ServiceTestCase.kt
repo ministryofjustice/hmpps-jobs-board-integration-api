@@ -56,7 +56,7 @@ abstract class ServiceTestCase : UnitTestBase() {
   )
 
   protected fun givenRefDataIdMapping(refData: String, dataValue: String) {
-    whenever(refDataMappingRepository.findByDataRefDataAndDataValue(refData, dataValue)).thenAnswer {
+    whenever(refDataMappingRepository.findByDataRefDataIgnoreCaseAndDataValueIgnoreCase(refData, dataValue)).thenAnswer {
       refDataMappingsMap[refData]?.get(dataValue)?.let { RefDataMapping(refData, dataValue, it) }
     }
   }

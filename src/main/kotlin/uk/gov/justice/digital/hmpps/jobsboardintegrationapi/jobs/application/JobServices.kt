@@ -120,7 +120,7 @@ class JobRegistrar(
     }!!
 
   private fun translateId(refData: RefData, value: String) =
-    refDataMappingRepository.findByDataRefDataAndDataValue(refData.type, value)?.data?.externalId ?: run {
+    refDataMappingRepository.findByDataRefDataIgnoreCaseAndDataValueIgnoreCase(refData.type, value)?.data?.externalId ?: run {
       throw IllegalArgumentException("Reference data does not exist! refData=${refData.type}: value=$value")
     }
 }

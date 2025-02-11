@@ -57,7 +57,7 @@ class JobRegistrarShould : ServiceTestCase() {
 
       jobRegistrar.registerCreation(job)
 
-      verify(refDataMappingRepository, never()).findByDataRefDataAndDataValue(any(), any())
+      verify(refDataMappingRepository, never()).findByDataRefDataIgnoreCaseAndDataValueIgnoreCase(any(), any())
       verify(mnJobBoardApiClient, never()).createJob(any())
       verify(jobExternalIdRepository, never()).save(any())
     }
