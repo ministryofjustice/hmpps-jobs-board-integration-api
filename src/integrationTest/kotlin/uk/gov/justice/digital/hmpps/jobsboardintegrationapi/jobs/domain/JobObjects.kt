@@ -30,8 +30,8 @@ internal object JobObjects {
     sourceSecondary = null,
     charityName = null,
     postcode = "NE15 7LR",
-    salaryFrom = 99f,
-    salaryTo = null,
+    salaryFrom = 1_234_567.12,
+    salaryTo = 7_654_321.12,
     salaryPeriod = "PER_DAY",
     additionalSalaryInformation = null,
     isPayingAtLeastNationalMinimumWage = true,
@@ -64,8 +64,8 @@ internal object JobObjects {
     sourceSecondary = null,
     charityName = "",
     postcode = "LS12 1AA",
-    salaryFrom = 11.93f,
-    salaryTo = 15.90f,
+    salaryFrom = 11.93,
+    salaryTo = 15.90,
     salaryPeriod = "PER_HOUR",
     additionalSalaryInformation = null,
     isPayingAtLeastNationalMinimumWage = false,
@@ -115,7 +115,7 @@ internal object JobObjects {
     sourceSecondary = null,
     charityName = null,
     postcode = "NE15 7LR",
-    salaryFrom = 99f,
+    salaryFrom = 99.0,
     salaryTo = null,
     salaryPeriod = "PER_DAY",
     additionalSalaryInformation = null,
@@ -218,8 +218,8 @@ class JobBuilder {
   var sourceSecondary: String? = null
   var charityName: String? = null
   var postcode: String = "LS11 5AD"
-  var salaryFrom: Float = 96.32f
-  var salaryTo: Float? = null
+  var salaryFrom: Double = 96.32
+  var salaryTo: Double? = null
   var salaryPeriod: String = "PER_DAY"
   var additionalSalaryInformation: String? = null
   var isPayingAtLeastNationalMinimumWage: Boolean = true
