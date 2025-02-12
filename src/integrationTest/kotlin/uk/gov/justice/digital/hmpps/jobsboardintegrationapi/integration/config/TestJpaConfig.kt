@@ -16,7 +16,5 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 class TestJpaConfig {
   @Primary
   @Bean
-  fun dateTimeProvider(): DateTimeProvider {
-    return mock(DateTimeProvider::class.java)
-  }
+  fun dateTimeProvider(): DateTimeProvider = mock(DateTimeProvider::class.java)
 }

@@ -29,10 +29,8 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructur
 class JobRetriever(
   private val jobsBoardApiClient: JobsBoardApiClient,
 ) {
-  fun retrieve(id: String): Job {
-    return jobsBoardApiClient.getJob(id) ?: run {
-      throw IllegalArgumentException("Job id=$id not found")
-    }
+  fun retrieve(id: String): Job = jobsBoardApiClient.getJob(id) ?: run {
+    throw IllegalArgumentException("Job id=$id not found")
   }
 }
 
@@ -146,16 +144,13 @@ class JobRegistrar(
 
   private fun retrieveExternalIdById(id: String): Long? = jobExternalIdRepository.findByKeyId(id)?.key?.externalId
 
-  private fun retrieveEmployerExternalIdById(employerId: String): Long =
-    employerExternalIdRepository.findByKeyId(employerId)?.key?.externalId.also {
-      assert(it != null) { "Employer external ID is not found for employerId=$employerId" }
-    }!!
+  private fun retrieveEmployerExternalIdById(employerId: String): Long = employerExternalIdRepository.findByKeyId(employerId)?.key?.externalId.also {
+    assert(it != null) { "Employer external ID is not found for employerId=$employerId" }
+  }!!
 
-  private fun translateOptionalId(refData: RefData, value: String?) =
-    value?.let { if (it.isNotEmpty()) translateId(refData, it) else null }
+  private fun translateOptionalId(refData: RefData, value: String?) = value?.let { if (it.isNotEmpty()) translateId(refData, it) else null }
 
-  private fun translateId(refData: RefData, value: String) =
-    refDataMappingRepository.findByDataRefDataIgnoreCaseAndDataValueIgnoreCase(refData.type, value)?.data?.externalId ?: run {
-      throw IllegalArgumentException("Reference data does not exist! refData=${refData.type}: value=$value")
-    }
+  private fun translateId(refData: RefData, value: String) = refDataMappingRepository.findByDataRefDataIgnoreCaseAndDataValueIgnoreCase(refData.type, value)?.data?.externalId ?: run {
+    throw IllegalArgumentException("Reference data does not exist! refData=${refData.type}: value=$value")
+  }
 }

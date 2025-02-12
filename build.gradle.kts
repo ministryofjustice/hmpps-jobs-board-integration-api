@@ -1,6 +1,6 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.1.2"
-  kotlin("plugin.spring") version "2.0.21"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "7.1.1"
+  kotlin("plugin.spring") version "2.1.10"
   `jvm-test-suite`
 }
 
@@ -11,11 +11,11 @@ configurations {
 ext["logback.version"] = "1.5.15"
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.1.1")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.2.2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.2.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.3.0")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4")
 
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("org.postgresql:postgresql")
@@ -38,8 +38,8 @@ testing {
     register<JvmTestSuite>("integrationTest") {
       dependencies {
         kotlin.target.compilations { named("integrationTest") { associateWith(getByName("main")) } }
-        implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.1.1")
-        implementation("org.wiremock:wiremock-standalone:3.9.2")
+        implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.2.0")
+        implementation("org.wiremock:wiremock-standalone:3.11.0")
         implementation("io.swagger.parser.v3:swagger-parser:2.1.25") {
           exclude(group = "io.swagger.core.v3")
           exclude(group = "io.swagger.parser.v3", module = "swagger-parser-safe-url-resolver")

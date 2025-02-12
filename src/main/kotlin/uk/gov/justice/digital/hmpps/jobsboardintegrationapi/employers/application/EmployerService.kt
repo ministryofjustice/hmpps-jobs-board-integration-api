@@ -68,8 +68,7 @@ class EmployerService(
 
   private fun retrieveExternalIdById(id: String): Long? = employerExternalIdRepository.findByKeyId(id)?.key?.externalId
 
-  private fun translateId(refData: RefData, value: String) =
-    refDataMappingRepository.findByDataRefDataIgnoreCaseAndDataValueIgnoreCase(refData.type, value)?.data?.externalId ?: run {
-      throw IllegalArgumentException("Reference data does not exist! refData=${refData.type}: value=$value")
-    }
+  private fun translateId(refData: RefData, value: String) = refDataMappingRepository.findByDataRefDataIgnoreCaseAndDataValueIgnoreCase(refData.type, value)?.data?.externalId ?: run {
+    throw IllegalArgumentException("Reference data does not exist! refData=${refData.type}: value=$value")
+  }
 }
