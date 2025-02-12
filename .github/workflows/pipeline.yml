@@ -46,7 +46,7 @@ on:
       docker_multiplatform:
         description: docker multiplatform build or not
         required: true
-        default: true
+        default: false
         type: boolean
 
 permissions:
@@ -74,8 +74,8 @@ jobs:
       docker_registry: ${{ inputs.docker_registry || 'ghcr.io' }}
       registry_org: ${{ inputs.registry_org || 'ministryofjustice' }}
       additional_docker_tag: ${{ inputs.additional_docker_tag }}
-      push: ${{ inputs.push || true }}
-      docker_multiplatform: ${{ inputs.docker_multiplatform || true }}
+      push: ${{ inputs.push == '' || inputs.push }}
+      docker_multiplatform: ${{ inputs.docker_multiplatform == '' || inputs.docker_multiplatform }}
   deploy_dev:
     name: Deploy to dev environment
     needs: 
