@@ -22,7 +22,7 @@ class IntegrationMessageServiceFacade(
   override fun handleMessage(integrationEvent: IntegrationEvent, messageAttributes: MessageAttributes) {
     val eventId = integrationEvent.eventId
     val eventType = integrationEvent.eventType
-    val messageId = messageAttributes?.messageId
+    val messageId = messageAttributes.messageId
     log.info("received event: messageId=$messageId, eventId=$eventId, eventType=$eventType")
     log.trace("received event: {}", integrationEvent)
 
