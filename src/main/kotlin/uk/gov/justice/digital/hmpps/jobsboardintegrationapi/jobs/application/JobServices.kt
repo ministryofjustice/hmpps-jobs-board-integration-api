@@ -110,7 +110,7 @@ class JobRegistrar(
       employerId = employerExtId,
       jobTitle = title,
       jobDescription = description,
-      postingDate = startDate?.toString(),
+      postingDate = null,
       closingDate = closingDate?.toString(),
       jobTypeId = 1,
       charityId = null,
