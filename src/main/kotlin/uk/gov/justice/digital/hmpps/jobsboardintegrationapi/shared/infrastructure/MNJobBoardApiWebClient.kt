@@ -32,9 +32,9 @@ class MNJobBoardApiWebClient(
       .accept(APPLICATION_JSON).body(Mono.just(request), request.javaClass)
       .retrieve()
       .bodyToMono(MNCreateEmployerResponse::class.java)
-      .onErrorResume { error ->
+      .onErrorMap { error ->
         val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
-        Mono.error(Exception("Fail to create employer! errorResponse=$errorResponse", error))
+        Exception("Fail to create employer! errorResponse=$errorResponse", error)
       }.block()!!
       .responseObject
   }
@@ -46,9 +46,9 @@ class MNJobBoardApiWebClient(
       .accept(APPLICATION_JSON).body(Mono.just(request), request.javaClass)
       .retrieve()
       .bodyToMono(MNUpdateEmployerResponse::class.java)
-      .onErrorResume { error ->
+      .onErrorMap { error ->
         val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
-        Mono.error(Exception("Fail to update employer! errorResponse=$errorResponse", error))
+        Exception("Fail to update employer! errorResponse=$errorResponse", error)
       }.block()!!
       .responseObject
   }
@@ -60,9 +60,9 @@ class MNJobBoardApiWebClient(
       .accept(APPLICATION_JSON).body(Mono.just(request.mnRequest()), MNCreateJobRequest::class.java)
       .retrieve()
       .bodyToMono(MNCreateJobResponse::class.java)
-      .onErrorResume { error ->
+      .onErrorMap { error ->
         val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
-        Mono.error(Exception("Fail to create job! errorResponse=$errorResponse", error))
+        Exception("Fail to create job! errorResponse=$errorResponse", error)
       }.block()!!
       .responseObject
   }
@@ -74,9 +74,9 @@ class MNJobBoardApiWebClient(
       .accept(APPLICATION_JSON).body(Mono.just(request.mnRequest()), MNUpdateJobRequest::class.java)
       .retrieve()
       .bodyToMono(MNUpdateJobResponse::class.java)
-      .onErrorResume { error ->
+      .onErrorMap { error ->
         val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
-        Mono.error(Exception("Fail to update job! errorResponse=$errorResponse", error))
+        Exception("Fail to update job! errorResponse=$errorResponse", error)
       }.block()!!
       .responseObject
   }
