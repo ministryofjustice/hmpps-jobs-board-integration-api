@@ -48,6 +48,10 @@ generic-service:
       DATABASE_PASSWORD: "database_password"
       DATABASE_NAME: "database_name"
       DATABASE_ENDPOINT: "rds_instance_endpoint"
+    sqs-integration-queue-instance-output:
+      HMPPS_SQS_QUEUES_INTEGRATIONQUEUE_QUEUE_NAME: "sqs_queue_name"
+    sqs-integration-dlq-instance-output:
+      HMPPS_SQS_QUEUES_INTEGRATIONQUEUE_DLQ_NAME: "sqs_queue_name"
 
   allowlist:
     groups:
