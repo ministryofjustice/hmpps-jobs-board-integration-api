@@ -14,6 +14,17 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 class JobsBoardApiMockServer : WireMockServer(8092) {
   private val retrieveEmployerPathRegex = "/employers/[a-zA-Z0-9\\-]*"
 
+  fun stubHealthPing(status: Int) {
+    stubFor(
+      get("/health/ping").willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody("""{"status":"${if (status == 200) "UP" else "DOWN"}"}""")
+          .withStatus(status),
+      ),
+    )
+  }
+
   fun stubRetrieveEmployer(employer: Employer) {
     stubFor(
       get(urlPathMatching(retrieveEmployerPathRegex))

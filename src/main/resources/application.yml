@@ -26,14 +26,6 @@ spring:
             token-uri: ${hmpps-auth.url}/oauth/token
 
         registration:
-          # example client registration for calling out to other services
-          # TODO: Remove / replace this registration
-          example-api:
-            provider: hmpps-auth
-            client-id: ${example-api.client.id}
-            client-secret: ${example-api.client.secret}
-            authorization-grant-type: client_credentials
-            scope: read
           hmpps-jobs-board-api:
             provider:  hmpps-auth
             client-id: ${api.client.id}

@@ -13,8 +13,6 @@ services:
     environment:
       - SERVER_PORT=8080
       - HMPPS_AUTH_URL=http://hmpps-auth:8080/auth
-      # TODO: Remove this URL and replace with outgoing service URLs
-      - EXAMPLE_URL=http://hmpps-jobs-board-integration-api:8080
       - SPRING_PROFILES_ACTIVE=dev,local
       - API_BASE_URL_JOBSBOARD=https://jobs-board-api-dev.hmpps.service.justice.gov.uk
       - API_BASE_URL_MNJOBBOARD=https://testservices.sequation.net/sequation-job-api

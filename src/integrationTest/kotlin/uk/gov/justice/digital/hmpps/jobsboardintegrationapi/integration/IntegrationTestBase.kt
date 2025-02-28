@@ -19,11 +19,10 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.testcontainers.LocalStackContainer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.testcontainers.LocalStackContainer.setLocalStackProperties
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.testcontainers.PostgresContainer
-import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.ExampleApiExtension
-import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.ExampleApiExtension.Companion.exampleApi
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.HmppsAuthApiExtension
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.JobsBoardApiExtension
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.JobsBoardApiExtension.Companion.jobsBoardApi
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.MNJobBoardApiExtension
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application.DefaultTimeProvider
 import uk.gov.justice.hmpps.test.kotlin.auth.JwtAuthorisationHelper
@@ -34,7 +33,6 @@ import java.util.*
 
 @ExtendWith(
   HmppsAuthApiExtension::class,
-  ExampleApiExtension::class,
   JobsBoardApiExtension::class,
   MNJobBoardApiExtension::class,
   MockitoExtension::class,
@@ -92,7 +90,7 @@ abstract class IntegrationTestBase {
 
   protected fun stubPingWithResponse(status: Int) {
     hmppsAuth.stubHealthPing(status)
-    exampleApi.stubHealthPing(status)
+    jobsBoardApi.stubHealthPing(status)
   }
 
   protected fun randomUUID() = UUID.randomUUID().toString()

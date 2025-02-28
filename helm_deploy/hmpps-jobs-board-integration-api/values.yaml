@@ -35,9 +35,6 @@ generic-service:
 
   namespace_secrets:
     hmpps-jobs-board-integration-api:
-      # Example client registration secrets
-      EXAMPLE_API_CLIENT_ID: "TEMPLATE_KOTLIN_API_CLIENT_ID"
-      EXAMPLE_API_CLIENT_SECRET: "TEMPLATE_KOTLIN_API_CLIENT_SECRET"
       API_CLIENT_ID: "SYSTEM_CLIENT_ID"
       API_CLIENT_SECRET: "SYSTEM_CLIENT_SECRET"
       MN_JOBBOARD_API_TOKEN: "MN_JOBBOARD_API_TOKEN"
