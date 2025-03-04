@@ -16,9 +16,13 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.application.Job
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.application.JobRetriever
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.application.JobUpdateMessageService
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobEventType
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application.IntegrationEventService
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.EventEmitter
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.IntegrationMessageService
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.EventQueueEmitter
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.HmppsMessageEventType
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.IntegrationMessageListener
+import uk.gov.justice.hmpps.sqs.HmppsQueueService
 
 @Configuration
 @ConditionalOnIntegrationEnabled
@@ -77,4 +81,10 @@ class IntegrationConfiguration {
   fun integrationMessageListener(
     @Qualifier("integrationMessageService") integrationMessageService: IntegrationMessageService,
   ) = IntegrationMessageListener(integrationMessageService)
+
+  @Bean
+  fun integrationEventService(eventEmitter: EventEmitter) = IntegrationEventService(eventEmitter)
+
+  @Bean
+  fun eventEmitter(hmppsQueueService: HmppsQueueService): EventEmitter = EventQueueEmitter(hmppsQueueService).apply { forceInit() }
 }
