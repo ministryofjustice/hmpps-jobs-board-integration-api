@@ -2,12 +2,18 @@ package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructu
 
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application.UnitTestBase
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.JobsBoardApiClient.Companion.FETCH_SIZE
+import java.net.URI
+import java.util.function.Function
 
 abstract class JobsBoardApiWebClientTestBase : UnitTestBase() {
   @Mock
@@ -34,5 +40,11 @@ abstract class JobsBoardApiWebClientTestBase : UnitTestBase() {
   protected fun <T> replyOnRequestById(elementClass: Class<T>, response: T & Any, uri: String, id: String) {
     onRequestById(uri, id)
     whenever(responseSpecMock.bodyToMono(elementClass)).thenReturn(Mono.just(response))
+  }
+
+  protected fun <T> replyOnPagedRequest(typeReference: ParameterizedTypeReference<T>, response: T & Any, uri: String, page: Int = 0, pageSize: Int = FETCH_SIZE) {
+    onRequest()
+    whenever(requestUriMock.uri(any<Function<UriBuilder, URI>>())).thenReturn(requestHeadersMock)
+    whenever(responseSpecMock.bodyToMono(typeReference)).thenReturn(Mono.just(response))
   }
 }

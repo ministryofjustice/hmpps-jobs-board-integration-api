@@ -10,10 +10,9 @@ import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Employer
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.GetEmployersResponse
 
 class JobsBoardApiMockServer : WireMockServer(8092) {
-  private val retrieveEmployerPathRegex = "/employers/[a-zA-Z0-9\\-]*"
-
   fun stubHealthPing(status: Int) {
     stubFor(
       get("/health/ping").willReturn(
@@ -27,7 +26,7 @@ class JobsBoardApiMockServer : WireMockServer(8092) {
 
   fun stubRetrieveEmployer(employer: Employer) {
     stubFor(
-      get(urlPathMatching(retrieveEmployerPathRegex))
+      get(urlPathMatching(EMPLOYER_PATH_REGEX))
         .withHeader("Authorization", containing("Bearer"))
         .willReturn(
           aResponse()
@@ -39,12 +38,35 @@ class JobsBoardApiMockServer : WireMockServer(8092) {
 
   fun stubRetrieveEmployerNotFound() {
     stubFor(
-      get(urlPathMatching(retrieveEmployerPathRegex))
+      get(urlPathMatching(EMPLOYER_PATH_REGEX))
         .willReturn(
           aResponse()
             .withStatus(404),
         ),
     )
+  }
+
+  fun stubRetrieveAllEmployers(vararg employer: Employer) = stubRetrieveAllEmployers(GetEmployersResponse.from(*employer))
+
+  fun stubRetrieveAllEmployers(page: Int, pageSize: Int, totalElements: Long, vararg employer: Employer) = stubRetrieveAllEmployers(
+    GetEmployersResponse.from(number = page, size = pageSize, totalElements, *employer),
+  )
+
+  fun stubRetrieveAllEmployers(getEmployersResponse: GetEmployersResponse) {
+    stubFor(
+      get(urlPathMatching(EMPLOYERS_PATH_REGEX))
+        .withHeader("Authorization", containing("Bearer"))
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(getEmployersResponse.response()),
+        ),
+    )
+  }
+
+  companion object {
+    private const val EMPLOYER_PATH_REGEX = "/employers/[a-zA-Z0-9\\-]*"
+    private const val EMPLOYERS_PATH_REGEX = "/employers[?.+]*"
   }
 }
 
@@ -72,3 +94,21 @@ private fun Employer.response() = """
     "createdAt": ${createdAt?.let { "\"$it\"" }}
   }
 """.trimIndent()
+
+private fun GetEmployersResponse.response() = if (content.isNotEmpty()) {
+  content.map { "\n${it.response().prependIndent(" ".repeat(8))}" }.joinToString(postfix = "\n${" ".repeat(4)}")
+} else {
+  ""
+}.let { contentString ->
+  """
+    {
+      "content": [$contentString],
+      "page": {
+        "size": ${page.size},
+        "number": ${page.number},
+        "totalElements": ${page.totalElements},
+        "totalPages": ${page.totalPages}
+      }
+    }
+  """.trimIndent()
+}
