@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.Integr
 const val ATTRIBUTE_EVENT_TYPE = "eventType"
 const val ATTRIBUTE_EVENT_ID = "eventId"
 const val ATTRIBUTE_ID = "id"
+const val INTEGRATION_QUEUE_ID = "integrationqueue"
 
 class IntegrationMessageListener(
   private val integrationMessageService: IntegrationMessageService,
@@ -19,7 +20,7 @@ class IntegrationMessageListener(
   }
 
   @MessageMapping
-  @SqsListener("integrationqueue", factory = "hmppsQueueContainerFactoryProxy")
+  @SqsListener(INTEGRATION_QUEUE_ID, factory = "hmppsQueueContainerFactoryProxy")
   fun processMessage(
     message: String,
     @Header(ATTRIBUTE_EVENT_TYPE) eventType: String?,
