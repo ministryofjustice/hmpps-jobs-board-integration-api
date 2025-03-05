@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDa
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.WORK_PATTERN
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMapping
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDataMappingRepository
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.EventEmitter
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.JobsBoardApiClient
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.MNJobBoardApiClient
 
@@ -42,6 +43,9 @@ abstract class ServiceTestCase : UnitTestBase() {
 
   @Mock
   protected lateinit var refDataMappingRepository: RefDataMappingRepository
+
+  @Mock
+  protected lateinit var eventEmitter: EventEmitter
 
   private val refDataMappingsMap = mapOf(
     EMPLOYER_STATUS.type to employerStatusIdMap,

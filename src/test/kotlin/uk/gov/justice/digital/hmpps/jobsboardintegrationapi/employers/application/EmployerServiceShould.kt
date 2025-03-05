@@ -1,24 +1,39 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.application
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestMethodOrder
 import org.mockito.InjectMocks
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEvent
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEventType
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEventType.EMPLOYER_CREATED
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEventType.EMPLOYER_UPDATED
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerExternalId
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.abcConstruction
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.amazon
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.mnEmployer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.sainsburys
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.tesco
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.tescoLogistics
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EMPLOYER_SECTOR
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.EMPLOYER_STATUS
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application.ServiceTestCase
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.EventData
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateEmployerRequest
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateEmployerRequest
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class EmployerServiceShould : ServiceTestCase() {
@@ -214,6 +229,62 @@ class EmployerServiceShould : ServiceTestCase() {
     }
   }
 
+  @Nested
+  @DisplayName("Given some existing employers, but not yet registered with MN")
+  @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
+  inner class GivenExistingEmployersYetRegistered {
+    private lateinit var employerIds: List<String>
+    private lateinit var employerCreationEvents: Array<EmployerEvent>
+    private lateinit var employerUpdateEvents: Array<EmployerEvent>
+
+    @BeforeEach
+    fun setUp() {
+      employerIds = listOf(tesco, amazon, sainsburys).map { it.id }.toList()
+      employerCreationEvents = employerIds.map { makeEvent(it) }.toTypedArray()
+      employerUpdateEvents = listOf(abcConstruction, tescoLogistics).map { makeEvent(it.id, EMPLOYER_UPDATED) }.toTypedArray()
+    }
+
+    @Test
+    @Order(1)
+    fun `send a few events`() {
+      val itemCount = employerService.sendEvent(*employerCreationEvents)
+      assertEquals(employerIds.size, itemCount)
+    }
+
+    @Test
+    @Order(2)
+    fun `proceed sending subsequent event, after a failure`() {
+      val errorEventIds = (0..1).map { i -> employerCreationEvents[i].eventId }.toSet()
+      whenever(eventEmitter.send(any<EventData>())).thenAnswer {
+        val eventId = (it.arguments.first() as EventData).eventId
+        if (errorEventIds.contains(eventId)) throw RuntimeException("Unexpected failure")
+      }
+
+      val itemCount = employerService.sendEvent(*employerCreationEvents)
+      assertEquals(1, itemCount)
+    }
+
+    @Test
+    @Order(3)
+    fun `send events of different types`() {
+      val expectedCount = employerCreationEvents.size + employerUpdateEvents.size
+
+      val itemCount = employerService.sendEvent(*(employerCreationEvents + employerUpdateEvents))
+      assertEquals(expectedCount, itemCount)
+    }
+
+    @Test
+    @Order(11)
+    fun `send more events`() {
+      val count = 10_000
+      val events = (1..count).map { makeEvent(randomUUID()) }.toTypedArray()
+      whenever(eventEmitter.send(any<EventData>())).then { runBlocking { delay(1L) } }
+
+      val itemCount = employerService.sendEvent(*events)
+      assertEquals(count, itemCount)
+    }
+  }
+
   private fun givenEmployerExternalIDExists(id: String, externalId: Long) {
     val employerExternalId = EmployerExternalId(id, externalId)
     whenever(employerExternalIdRepository.findByKeyId(id)).thenReturn(employerExternalId)
@@ -227,4 +298,11 @@ class EmployerServiceShould : ServiceTestCase() {
     givenRefDataIdMapping(EMPLOYER_STATUS.type, employerStatus)
     givenRefDataIdMapping(EMPLOYER_SECTOR.type, employerSector)
   }
+
+  private fun makeEvent(id: String, eventType: EmployerEventType = EMPLOYER_CREATED) = EmployerEvent(
+    eventId = randomUUID(),
+    eventType = eventType,
+    timestamp = defaultCurrentTime,
+    employerId = id,
+  )
 }
