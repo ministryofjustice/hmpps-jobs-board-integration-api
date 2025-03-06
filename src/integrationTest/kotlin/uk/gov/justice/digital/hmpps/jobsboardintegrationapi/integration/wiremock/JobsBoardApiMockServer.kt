@@ -49,7 +49,7 @@ class JobsBoardApiMockServer : WireMockServer(8092) {
   fun stubRetrieveAllEmployers(vararg employer: Employer) = stubRetrieveAllEmployers(GetEmployersResponse.from(*employer))
 
   fun stubRetrieveAllEmployers(page: Int, pageSize: Int, totalElements: Long, vararg employer: Employer) = stubRetrieveAllEmployers(
-    GetEmployersResponse.from(number = page, size = pageSize, totalElements, *employer),
+    GetEmployersResponse.from(number = page, size = pageSize, totalElements = totalElements, items = employer),
   )
 
   fun stubRetrieveAllEmployers(getEmployersResponse: GetEmployersResponse) {

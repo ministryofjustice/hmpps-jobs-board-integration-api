@@ -158,9 +158,12 @@ data class PageResponse<T>(
   constructor() : this(emptyList(), PageMetaData(0, FETCH_SIZE, 0, 0))
 
   companion object {
-    fun <T> from(vararg items: T) = from(0, FETCH_SIZE, items.size.toLong(), *items)
-
-    fun <T> from(number: Int, size: Int, totalElements: Long, vararg items: T): PageResponse<T> {
+    fun <T> from(
+      vararg items: T,
+      number: Int = 0,
+      size: Int = FETCH_SIZE,
+      totalElements: Long = items.size.toLong(),
+    ): PageResponse<T> {
       val totalPages = ceil(totalElements.toDouble() / size).toInt()
       return PageResponse(
         content = items.toList(),
@@ -168,6 +171,9 @@ data class PageResponse<T>(
       )
     }
   }
+
+  fun isEmpty() = page.totalElements <= 0
+  fun hasNext() = page.number < page.totalPages - 1
 }
 
 data class PageMetaData(

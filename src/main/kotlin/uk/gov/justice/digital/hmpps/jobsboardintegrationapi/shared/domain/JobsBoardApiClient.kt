@@ -8,7 +8,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructur
 interface JobsBoardApiClient {
   fun getEmployer(id: String): Employer?
 
-  fun getAllEmployers() = getAllEmployers(0, FETCH_SIZE)
+  fun getAllEmployers() = getAllEmployers(DEFAULT_PAGE, FETCH_SIZE)
   fun getAllEmployers(page: Int, pageSize: Int): GetEmployersResponse
 
   fun getJob(id: String): Job?
@@ -17,5 +17,6 @@ interface JobsBoardApiClient {
 
   companion object {
     const val FETCH_SIZE = 50
+    const val DEFAULT_PAGE = 0
   }
 }
