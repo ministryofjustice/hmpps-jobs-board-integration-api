@@ -3,8 +3,10 @@ package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremoc
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.containing
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
+import com.github.tomakehurst.wiremock.client.WireMock.urlPathTemplate
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
@@ -26,8 +28,9 @@ class JobsBoardApiMockServer : WireMockServer(8092) {
 
   fun stubRetrieveEmployer(employer: Employer) {
     stubFor(
-      get(urlPathMatching(EMPLOYER_PATH_REGEX))
+      get(urlPathTemplate(EMPLOYER_PATH_TEMPLATE))
         .withHeader("Authorization", containing("Bearer"))
+        .withPathParam(EMPLOYER_PATH_ID, equalTo(employer.id))
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
@@ -35,6 +38,8 @@ class JobsBoardApiMockServer : WireMockServer(8092) {
         ),
     )
   }
+
+  fun stubRetrieveEmployer(employers: List<Employer>) = employers.forEach { stubRetrieveEmployer(it) }
 
   fun stubRetrieveEmployerNotFound() {
     stubFor(
@@ -46,6 +51,7 @@ class JobsBoardApiMockServer : WireMockServer(8092) {
     )
   }
 
+  fun stubRetrieveAllEmployers(employers: List<Employer>) = stubRetrieveAllEmployers(*employers.toTypedArray())
   fun stubRetrieveAllEmployers(vararg employer: Employer) = stubRetrieveAllEmployers(GetEmployersResponse.from(*employer))
 
   fun stubRetrieveAllEmployers(page: Int, pageSize: Int, totalElements: Long, vararg employer: Employer) = stubRetrieveAllEmployers(
@@ -65,6 +71,8 @@ class JobsBoardApiMockServer : WireMockServer(8092) {
   }
 
   companion object {
+    private const val EMPLOYER_PATH_ID = "id"
+    private const val EMPLOYER_PATH_TEMPLATE = "/employers/{$EMPLOYER_PATH_ID}"
     private const val EMPLOYER_PATH_REGEX = "/employers/[a-zA-Z0-9\\-]*"
     private const val EMPLOYERS_PATH_REGEX = "/employers[?.+]*"
   }

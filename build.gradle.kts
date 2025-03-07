@@ -53,6 +53,7 @@ testing {
         implementation("org.testcontainers:localstack")
         implementation("org.testcontainers:postgresql")
         implementation("org.jetbrains.kotlin:kotlin-test-junit5")
+        implementation("org.awaitility:awaitility-kotlin")
       }
 
       targets {

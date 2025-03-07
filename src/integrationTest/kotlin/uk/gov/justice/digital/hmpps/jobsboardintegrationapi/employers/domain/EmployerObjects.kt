@@ -15,7 +15,7 @@ object EmployerObjects {
 
   val tescoLogistics = Employer(
     id = "2c8032bf-e583-4ae9-bcec-968a1c4881f9",
-    name = "Tesco",
+    name = "Tesco Logistics",
     description = "This is another Tesco employer that provides logistic services.",
     sector = "LOGISTICS",
     status = "GOLD",
@@ -74,7 +74,8 @@ object EmployerObjects {
   )
 }
 
-internal fun Employer.mnEmployer() = MNEmployer(
+internal fun Employer.mnEmployer(externalId: Long? = null) = MNEmployer(
+  id = externalId,
   employerName = name,
   employerBio = description,
   sectorId = employerSectorIdMap[sector]!!,

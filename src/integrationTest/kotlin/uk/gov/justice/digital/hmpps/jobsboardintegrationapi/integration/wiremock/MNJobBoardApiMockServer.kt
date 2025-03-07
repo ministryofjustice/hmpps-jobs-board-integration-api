@@ -5,10 +5,12 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.matching
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.put
+import com.github.tomakehurst.wiremock.stubbing.Scenario
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Employer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.asJson
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.asStringList
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNEmployer
@@ -18,9 +20,39 @@ private const val EMPLOYERS_ENDPOINT = "/employers"
 private const val JOBS_ENDPOINT = "/jobs-prison-leavers"
 
 class MNJobBoardApiMockServer : WireMockServer(8093) {
-  fun stubCreateEmployer(mnEmployer: MNEmployer, newId: Long) = stubPostWithReply(EMPLOYERS_ENDPOINT, mnEmployer.copy(id = newId).response())
+  private var nextEmployerId: Long = 1L
 
-  fun stubUpdateEmployer(mnEmployer: MNEmployer) = stubPostWithReply("$EMPLOYERS_ENDPOINT/${mnEmployer.id!!}", mnEmployer.copy().response())
+  companion object {
+    const val SCENARIO_CREATE_EMPLOYER = "CreateEmployer"
+  }
+
+  fun stubCreateEmployer(mnEmployer: MNEmployer) = stubPostWithReply(
+    url = EMPLOYERS_ENDPOINT,
+    replyBody = mnEmployer.copy(id = nextEmployerId++).createdResponse(),
+  )
+
+  fun resetStates(nextEmployerId: Long? = null) {
+    this.nextEmployerId = nextEmployerId ?: 1L
+  }
+
+  fun stubCreateEmployer(employers: List<Employer>) {
+    var state = Scenario.STARTED
+    employers.forEach {
+      val id = nextEmployerId++
+      val nextState = nextEmployerId.toString()
+
+      stubStatefulPostWithReply(
+        url = EMPLOYERS_ENDPOINT,
+        replyBody = dummyEmployerCreatedResponse(id),
+        scenario = SCENARIO_CREATE_EMPLOYER,
+        state = state,
+        nextState = nextState,
+      )
+      state = nextState
+    }
+  }
+
+  fun stubUpdateEmployer(mnEmployer: MNEmployer) = stubPostWithReply("$EMPLOYERS_ENDPOINT/${mnEmployer.id!!}", mnEmployer.copy().updatedResponse(), 200)
 
   fun stubCreateEmployerUnauthorised() = stubPostUnauthorised(EMPLOYERS_ENDPOINT)
 
@@ -37,13 +69,30 @@ class MNJobBoardApiMockServer : WireMockServer(8093) {
 
   fun stubUpdateJobUnauthorised() = stubPutUnauthorised(JOBS_ENDPOINT)
 
-  private fun stubPostWithReply(url: String, replyBody: String) {
+  private fun stubPostWithReply(url: String, replyBody: String, statusCode: Int = 201) {
     stubFor(
       post(url)
         .withHeader("Authorization", matching("^Bearer .+\$"))
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
+            .withStatus(statusCode)
+            .withBody(replyBody),
+        ),
+    )
+  }
+
+  private fun stubStatefulPostWithReply(url: String, replyBody: String, scenario: String, state: String, nextState: String) {
+    stubFor(
+      post(url)
+        .withHeader("Authorization", matching("^Bearer .+\$"))
+        .inScenario(scenario)
+        .whenScenarioStateIs(state)
+        .willSetStateTo(nextState)
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(201)
             .withBody(replyBody),
         ),
     )
@@ -94,16 +143,57 @@ class MNJobBoardApiExtension :
   }
 
   override fun beforeAll(context: ExtensionContext): Unit = mnJobBoardApi.start()
-  override fun beforeEach(context: ExtensionContext): Unit = mnJobBoardApi.resetAll()
+  override fun beforeEach(context: ExtensionContext) {
+    mnJobBoardApi.resetAll()
+    mnJobBoardApi.resetStates()
+  }
   override fun afterAll(context: ExtensionContext): Unit = mnJobBoardApi.stop()
 }
 
-private fun MNEmployer.response() = """
+private fun dummyEmployerCreatedResponse(id: Long) = """
   {
     "message": {
         "successCode": "J2047",
         "successMessage": "Successfully added employer",
         "httpStatusCode": 201
+    },
+    "responseObject": {
+        "id": $id,
+        "employerName": "dummy",
+        "employerBio": "dummy",
+        "sectorId": 1,
+        "partnerId": 1,
+        "imgName": null,
+        "path": null
+    }
+  }
+""".trimIndent()
+
+private fun MNEmployer.createdResponse() = """
+  {
+    "message": {
+        "successCode": "J2047",
+        "successMessage": "Successfully added employer",
+        "httpStatusCode": 201
+    },
+    "responseObject": {
+        "id": $id,
+        "employerName": "$employerName",
+        "employerBio": "$employerBio",
+        "sectorId": $sectorId,
+        "partnerId": $partnerId,
+        "imgName": ${imgName?.let { "\"$it\"" }},
+        "path": ${path?.let { "\"$it\"" }}
+    }
+  }
+""".trimIndent()
+
+private fun MNEmployer.updatedResponse() = """
+  {
+    "message": {
+        "successCode": "J2048",
+        "successMessage": "Successfully updated employer",
+        "httpStatusCode": 200
     },
     "responseObject": {
         "id": $id,

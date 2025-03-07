@@ -21,7 +21,6 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructur
 import kotlin.test.assertFailsWith
 
 class MNJobBoardApiWebClientShould : IntegrationTestBase() {
-
   @Autowired
   private lateinit var apiWebClient: MNJobBoardApiWebClient
 
@@ -37,7 +36,7 @@ class MNJobBoardApiWebClientShould : IntegrationTestBase() {
     @Test
     fun `create employer, with valid details`() {
       val expectedEmployer = mnEmployer.copy(id = 1L)
-      mnJobBoardApi.stubCreateEmployer(mnEmployer, expectedEmployer.id!!)
+      mnJobBoardApi.stubCreateEmployer(mnEmployer)
 
       val actualEmployer = CreateEmployerRequest.from(mnEmployer).let { apiWebClient.createEmployer(it) }
 
