@@ -35,9 +35,9 @@ class EventQueueEmitter(
         .messageBody(event.content)
         .messageAttributes(event.messageAttributes())
         .build()
-        .also { log.debug("Send event {} to outbound queue", event.eventId) },
+        .also { log.trace("Send event {} to integration queue", event) },
     ).get().let {
-      log.info("Sent event ${event.eventId} to outbound queue")
+      log.info("Sent event ${event.eventId} to integration queue")
     }
   }
 

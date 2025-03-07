@@ -28,6 +28,7 @@ class ResourceServerConfiguration {
         "/swagger-ui/**",
         "/swagger-ui.html",
         "/queue-admin/retry-all-dlqs",
+        "/integration-admin/resend-employers",
       ).forEach { authorize(it, permitAll) }
       authorize(anyRequest, authenticated)
     }

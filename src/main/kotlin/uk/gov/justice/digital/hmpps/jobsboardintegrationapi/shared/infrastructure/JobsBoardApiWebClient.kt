@@ -41,6 +41,7 @@ class JobsBoardApiWebClient(
         log.warn("Employer not found. employerId={}; errorResponse={}", id, errorResponse)
         Mono.empty()
       }.block()?.employer()
+      .also { log.trace("Employer details: id={}, details={}", id, it) }
   }
 
   override fun getAllEmployers(page: Int, pageSize: Int): GetEmployersResponse {

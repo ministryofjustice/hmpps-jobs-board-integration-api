@@ -36,6 +36,7 @@ class IntegrationMessageListener(
       ).filterValues { it != null }.let { attributes.putAll(it) }
     }
     val event = IntegrationEvent(
+      eventId = eventId,
       eventType = eventType,
       message = message,
     )

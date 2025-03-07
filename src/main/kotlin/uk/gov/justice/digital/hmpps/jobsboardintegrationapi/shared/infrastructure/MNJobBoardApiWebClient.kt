@@ -37,6 +37,7 @@ class MNJobBoardApiWebClient(
         Exception("Fail to create employer! errorResponse=$errorResponse", error)
       }.block()!!
       .responseObject
+      .also { log.trace("Create employer response={}", it) }
   }
 
   override fun updateEmployer(request: UpdateEmployerRequest): UpdateEmployerResponse {
@@ -51,6 +52,7 @@ class MNJobBoardApiWebClient(
         Exception("Fail to update employer! errorResponse=$errorResponse", error)
       }.block()!!
       .responseObject
+      .also { log.trace("Update employer response={}", it) }
   }
 
   override fun createJob(request: CreateJobRequest): CreateJobResponse {
