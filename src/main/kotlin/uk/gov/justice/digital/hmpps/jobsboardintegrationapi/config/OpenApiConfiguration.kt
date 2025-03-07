@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.info.Info
 import io.swagger.v3.oas.models.security.SecurityRequirement
 import io.swagger.v3.oas.models.security.SecurityScheme
 import io.swagger.v3.oas.models.servers.Server
+import io.swagger.v3.oas.models.tags.Tag
 import org.springframework.boot.info.BuildProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -24,8 +25,11 @@ class OpenApiConfiguration(buildProperties: BuildProperties) {
         Server().url("https://jobs-board-integration-api.hmpps.service.justice.gov.uk").description("Production"),
         Server().url("http://localhost:8080").description("Local"),
       ),
-    )
-    .info(
+    ).tags(
+      listOf(
+        Tag().name("Resend data").description("Resending current data to external party"),
+      ),
+    ).info(
       Info().title("HMPPS Jobs Board Integration Api").version(version)
         .contact(Contact().name("HMPPS Digital Studio").email("feedback@digital.justice.gov.uk")),
     )

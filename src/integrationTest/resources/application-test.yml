@@ -36,3 +36,7 @@ api:
 
 mn.jobboard:
   api.token: "mn-api-bearer-token"
+
+logging:
+  level:
+    uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure: TRACE
