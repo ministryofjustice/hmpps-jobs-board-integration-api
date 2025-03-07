@@ -39,4 +39,4 @@ mn.jobboard:
 
 logging:
   level:
-    uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure: TRACE
+    uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure: DEBUG
