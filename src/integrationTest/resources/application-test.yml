@@ -22,6 +22,7 @@ hmpps.sqs:
   queues:
     integrationqueue:
       queueName: hmpps_jobs_board_integration_queue
+      dlqName: hmpps_jobs_board_integration_dlq
 
 api:
   base.url:
