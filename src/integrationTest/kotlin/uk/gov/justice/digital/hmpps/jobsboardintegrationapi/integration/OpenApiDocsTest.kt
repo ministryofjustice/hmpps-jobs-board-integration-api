@@ -72,6 +72,7 @@ class OpenApiDocsTest : IntegrationTestBase() {
       "/queue-admin/retry-all-dlqs",
       "/queue-admin/purge-queue/{queueName}",
       "/queue-admin/get-dlq-messages/{dlqName}",
+      "/integration-admin/resend-employers",
     )
 
     // The security requirements of each path don't appear to be validated like they are at https://editor.swagger.io/
@@ -108,6 +109,11 @@ class OpenApiDocsTest : IntegrationTestBase() {
     // There are 4 SQS endpoints without security scheme, to be excluded from this test; all these endpoint has single tag "hmpps-queue-resource"
     val queueAdminTag = "hmpps-queue-resource"
     val queueAdminEndpointCount = 4
+    // These are internal admin endpoints for resending data, protected by ingress
+    val resendDataTag = "Resend data"
+    val resendDateEndpointCount = 1
+
+    val excludeCount = queueAdminEndpointCount + resendDateEndpointCount
 
     webTestClient.get()
       .uri("/v3/api-docs")
@@ -116,8 +122,8 @@ class OpenApiDocsTest : IntegrationTestBase() {
       .expectStatus().isOk
       .expectBody()
       .jsonPath("$.paths[*][*][?(!@.security)]..tags[0]").value<JSONArray> {
-        assertThat(it).hasSize(queueAdminEndpointCount)
-        it.forEach { tag -> assertThat(tag).isEqualTo(queueAdminTag) }
+        assertThat(it).hasSize(excludeCount)
+        it.forEach { tag -> assertThat(tag).isIn(queueAdminTag, resendDataTag) }
       }
   }
 }
