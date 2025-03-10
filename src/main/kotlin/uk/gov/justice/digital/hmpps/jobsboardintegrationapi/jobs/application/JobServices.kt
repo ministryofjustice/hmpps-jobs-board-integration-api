@@ -135,7 +135,7 @@ class JobRegistrar(
       salaryPeriodId = translateId(SALARY_PERIOD, salaryPeriod),
       additionalSalaryInformation = additionalSalaryInformation,
       nationalMinimumWage = isPayingAtLeastNationalMinimumWage,
-      ringfencedJob = (if (!isRollingOpportunity) false else null),
+      ringfencedJob = isOnlyForPrisonLeavers,
       desirableJobCriteria = desirableCriteria,
       essentialJobCriteria = essentialCriteria,
       howToApply = howToApply,
