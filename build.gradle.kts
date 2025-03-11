@@ -13,7 +13,9 @@ dependencies {
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.3.2")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5") {
+    implementation("org.webjars:swagger-ui:5.20.0")
+  }
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
 
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
