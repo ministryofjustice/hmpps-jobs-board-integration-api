@@ -374,7 +374,7 @@ internal fun Job.mnJob(employerExtId: Long = 1L, id: Long? = null) = MNJob(
   salaryPeriodId = salaryPeriodIdMap[salaryPeriod]!!,
   additionalSalaryInformation = additionalSalaryInformation,
   nationalMinimumWage = isPayingAtLeastNationalMinimumWage,
-  ringfencedJob = (if (!isRollingOpportunity) false else null),
+  ringfencedJob = isOnlyForPrisonLeavers,
   desirableJobCriteria = desirableCriteria,
   essentialJobCriteria = essentialCriteria,
   howToApply = howToApply,
