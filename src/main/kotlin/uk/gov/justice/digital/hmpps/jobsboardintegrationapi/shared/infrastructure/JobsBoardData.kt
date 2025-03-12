@@ -151,6 +151,32 @@ data class GetJobResponse(
   private fun joinToString(listOfStrings: List<String>?) = listOfStrings?.joinToString(",")
 }
 
+typealias GetJobsResponse = PageResponse<GetJobsData>
+
+data class GetJobsData(
+  val id: String,
+  val employerId: String,
+  val employerName: String,
+  val jobTitle: String,
+  val numberOfVacancies: Int,
+  val sector: String,
+  val createdAt: String,
+) {
+  companion object {
+    fun from(job: Job) = job.run {
+      GetJobsData(
+        id = id,
+        employerId = employerId,
+        employerName = employer!!.name,
+        jobTitle = title,
+        numberOfVacancies = numberOfVacancies,
+        sector = sector,
+        createdAt = createdAt.toString(),
+      )
+    }
+  }
+}
+
 data class PageResponse<T>(
   val content: List<T>,
   val page: PageMetaData,

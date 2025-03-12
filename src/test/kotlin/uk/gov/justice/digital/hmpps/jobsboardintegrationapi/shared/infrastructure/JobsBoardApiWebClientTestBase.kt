@@ -10,6 +10,8 @@ import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import reactor.core.publisher.Mono
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Employer
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.Job
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application.UnitTestBase
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.JobsBoardApiClient.Companion.FETCH_SIZE
 import java.net.URI
@@ -47,4 +49,7 @@ abstract class JobsBoardApiWebClientTestBase : UnitTestBase() {
     whenever(requestUriMock.uri(any<Function<UriBuilder, URI>>())).thenReturn(requestHeadersMock)
     whenever(responseSpecMock.bodyToMono(typeReference)).thenReturn(Mono.just(response))
   }
+
+  protected fun Employer.makeCopy() = copy(createdAt = defaultCurrentTime)
+  protected fun Job.makeCopy() = let { it.copy(createdAt = defaultCurrentTime).apply { employer = it.employer } }
 }
