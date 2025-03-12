@@ -11,6 +11,8 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.JobsBoardApiExtension.Companion.jobsBoardApi
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.getEmployersResponse
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.GetEmployerResponse
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.JobsBoardApiWebClient
 import kotlin.math.ceil
 
@@ -57,11 +59,14 @@ class JobsBoardApiWebClientShould : IntegrationTestBase() {
     fun `return all employers`() {
       hmppsAuth.stubGrantToken()
       jobsBoardApi.stubRetrieveAllEmployers(*someEmployers)
+      val expectedEmployers = someEmployers.getEmployersResponse()
 
       val employersResponse = jobsBoardApiWebClient.getAllEmployers()
 
-      assertThat(employersResponse.content.size).isEqualTo(someEmployers.size)
-      assertThat(employersResponse.content).containsOnly(*someEmployers)
+      with(expectedEmployers.content) {
+        assertThat(employersResponse.content.size).isEqualTo(size)
+        assertThat(employersResponse.content).containsOnly(*toTypedArray())
+      }
     }
 
     @Test
@@ -86,6 +91,7 @@ class JobsBoardApiWebClientShould : IntegrationTestBase() {
       val pageSize = 1
       val expectedTotalElements = someEmployers.size.toLong()
       val expectedEmployer = someEmployers[1]
+      val expectedEmployerResponse = GetEmployerResponse.from(expectedEmployer)
       val expectedTotalPages = ceil(expectedTotalElements.toDouble() / pageSize).toInt()
       jobsBoardApi.stubRetrieveAllEmployers(currentPage, pageSize, expectedTotalElements, expectedEmployer)
 
@@ -93,7 +99,7 @@ class JobsBoardApiWebClientShould : IntegrationTestBase() {
 
       assertThat(employersResponse.content)
         .hasSize(1)
-        .first().isEqualTo(expectedEmployer)
+        .first().isEqualTo(expectedEmployerResponse)
       employersResponse.page.run {
         assertThat(number).isEqualTo(currentPage)
         assertThat(size).isEqualTo(pageSize)
