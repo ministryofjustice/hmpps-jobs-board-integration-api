@@ -32,12 +32,13 @@ class JobsBoardApiWebClientShould : JobsBoardApiWebClientTestBase() {
 
     @Test
     fun `return all employers`() {
-      replyOnGetEmployers(GetEmployersResponse.from(*someEmployers))
+      val responses = someEmployers.map { GetEmployerResponse.from(it) }.toTypedArray()
+      replyOnGetEmployers(GetEmployersResponse.from(*responses))
       val employersPage = jobsBoardApiWebClient.getAllEmployers()
 
       assertThat(employersPage.content)
         .hasSize(someEmployers.size)
-        .contains(*someEmployers)
+        .contains(*responses)
     }
 
     private fun replyOnGetEmployerById(response: GetEmployerResponse, employerId: String) = replyOnRequestById(response.javaClass, response, uri, employerId)

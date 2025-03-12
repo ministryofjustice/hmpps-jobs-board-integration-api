@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Employer
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.GetEmployerResponse
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.GetEmployersResponse
 
 class JobsBoardApiMockServer : WireMockServer(8092) {
@@ -51,12 +52,11 @@ class JobsBoardApiMockServer : WireMockServer(8092) {
     )
   }
 
-  fun stubRetrieveAllEmployers(employers: List<Employer>) = stubRetrieveAllEmployers(*employers.toTypedArray())
-  fun stubRetrieveAllEmployers(vararg employer: Employer) = stubRetrieveAllEmployers(GetEmployersResponse.from(*employer))
+  fun stubRetrieveAllEmployers(employers: List<Employer>) = stubRetrieveAllEmployers(employers.getEmployersResponse())
+  fun stubRetrieveAllEmployers(vararg employer: Employer) = stubRetrieveAllEmployers(employer.getEmployersResponse())
 
-  fun stubRetrieveAllEmployers(page: Int, pageSize: Int, totalElements: Long, vararg employer: Employer) = stubRetrieveAllEmployers(
-    GetEmployersResponse.from(number = page, size = pageSize, totalElements = totalElements, items = employer),
-  )
+  fun stubRetrieveAllEmployers(page: Int, pageSize: Int, totalElements: Long, vararg employer: Employer) = employer.map { GetEmployerResponse.from(it) }.toTypedArray()
+    .let { stubRetrieveAllEmployers(GetEmployersResponse.from(number = page, size = pageSize, totalElements = totalElements, items = it)) }
 
   fun stubRetrieveAllEmployers(getEmployersResponse: GetEmployersResponse) {
     stubFor(
@@ -92,14 +92,20 @@ class JobsBoardApiExtension :
   override fun afterAll(context: ExtensionContext): Unit = jobsBoardApi.stop()
 }
 
-private fun Employer.response() = """
+fun List<Employer>.getEmployersResponse() = GetEmployersResponse.from(*map { GetEmployerResponse.from(it) }.toTypedArray())
+
+fun Array<out Employer>.getEmployersResponse() = GetEmployersResponse.from(*this.map { GetEmployerResponse.from(it) }.toTypedArray())
+
+private fun Employer.response() = GetEmployerResponse.from(this).response()
+
+private fun GetEmployerResponse.response() = """
   {
     "id": "$id",
     "name": "$name",
     "description": "$description",
     "sector": "$sector",
     "status": "$status",
-    "createdAt": ${createdAt?.let { "\"$it\"" }}
+    "createdAt": "$createdAt"
   }
 """.trimIndent()
 

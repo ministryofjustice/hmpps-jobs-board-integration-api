@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.tesco
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.tescoLogistics
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application.UnitTestBase
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.GetEmployerResponse
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.GetEmployersResponse
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNEmployer
 import kotlin.math.min
@@ -272,7 +273,7 @@ class EmployerRegistrarShould : UnitTestBase() {
     whenever(employerService.retrieveAll(anyInt(), anyInt())).thenAnswer {
       val page = it.arguments.first() as Int
       val range = (page * pageSize).let { offset -> IntRange(offset, min(offset + pageSize, totalCount) - 1) }
-      val items = employers.slice(range).toTypedArray()
+      val items = employers.slice(range).map { GetEmployerResponse.from(it) }.toTypedArray()
       GetEmployersResponse.from(*items, number = page, size = pageSize, totalElements = totalCount.toLong())
     }
   }

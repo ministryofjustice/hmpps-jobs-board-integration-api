@@ -36,7 +36,7 @@ data class GetEmployerResponse(
   )
 }
 
-typealias GetEmployersResponse = PageResponse<Employer>
+typealias GetEmployersResponse = PageResponse<GetEmployerResponse>
 
 data class GetJobResponse(
   val id: String,
