@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import software.amazon.awssdk.services.sqs.SqsAsyncClient
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Employer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerExternalId
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerExternalIdRepository
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.config.SqsTestConfig
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.Job
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.INTEGRATION_QUEUE_ID
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.MissingQueueException
@@ -23,7 +25,7 @@ import uk.gov.justice.hmpps.sqs.countMessagesOnQueue
 import java.time.Duration
 
 @Import(SqsTestConfig::class)
-class ApplicationTestCase : IntegrationTestBase() {
+abstract class ApplicationTestCase : IntegrationTestBase() {
   @Autowired
   protected lateinit var employerExternalIdRepository: EmployerExternalIdRepository
 
@@ -76,4 +78,8 @@ class ApplicationTestCase : IntegrationTestBase() {
   protected fun purgeIntegrationQueues() = listOf(integrationQueueUrl, integrationDlqUrl)
     .map { PurgeQueueRequest(integrationQueue.queueName, integrationQeueSqsClientSpy, it) }
     .forEach { runBlocking { hmppsQueueService.purgeQueue(it) } }
+
+  protected fun Employer.makeCopy() = copy(createdAt = timeProvider.nowAsInstant())
+
+  protected fun Job.makeCopy() = let { copy(createdAt = timeProvider.nowAsInstant()).apply { employer = it.employer } }
 }
