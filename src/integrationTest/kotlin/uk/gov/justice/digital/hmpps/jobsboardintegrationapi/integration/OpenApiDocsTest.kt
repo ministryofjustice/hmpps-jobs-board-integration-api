@@ -73,6 +73,7 @@ class OpenApiDocsTest : IntegrationTestBase() {
       "/queue-admin/purge-queue/{queueName}",
       "/queue-admin/get-dlq-messages/{dlqName}",
       "/integration-admin/resend-employers",
+      "/integration-admin/resend-jobs",
     )
 
     // The security requirements of each path don't appear to be validated like they are at https://editor.swagger.io/
@@ -111,7 +112,7 @@ class OpenApiDocsTest : IntegrationTestBase() {
     val queueAdminEndpointCount = 4
     // These are internal admin endpoints for resending data, protected by ingress
     val resendDataTag = "Resend data"
-    val resendDateEndpointCount = 1
+    val resendDateEndpointCount = 2
 
     val excludeCount = queueAdminEndpointCount + resendDateEndpointCount
 
