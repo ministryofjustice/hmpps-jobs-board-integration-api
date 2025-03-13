@@ -195,7 +195,7 @@ private fun PageResponse<String>.response() = if (content.isNotEmpty()) {
   """.trimIndent()
 }
 
-private fun Job.response() = GetJobResponse.from(this).response().also { println("job.response()=$it") }
+private fun Job.response() = GetJobResponse.from(this).response()
 
 private fun GetJobResponse.response() = """
   {
