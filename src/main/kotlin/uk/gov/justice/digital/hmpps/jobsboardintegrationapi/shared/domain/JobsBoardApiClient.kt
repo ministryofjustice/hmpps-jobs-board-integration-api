@@ -4,6 +4,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.ExpressionOfInterest
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.Job
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.GetEmployersResponse
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.GetJobsResponse
 
 interface JobsBoardApiClient {
   fun getEmployer(id: String): Employer?
@@ -12,6 +13,8 @@ interface JobsBoardApiClient {
   fun getAllEmployers(page: Int, pageSize: Int): GetEmployersResponse
 
   fun getJob(id: String): Job?
+  fun getAllJobs() = getAllJobs(DEFAULT_PAGE, FETCH_SIZE)
+  fun getAllJobs(page: Int, pageSize: Int): GetJobsResponse
 
   fun createExpressionOfInterest(expressionOfInterest: ExpressionOfInterest)
 

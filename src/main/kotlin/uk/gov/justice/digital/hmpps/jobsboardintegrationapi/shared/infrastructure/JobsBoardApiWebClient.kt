@@ -17,7 +17,8 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.JobsBo
 
 private const val EMPLOYERS_ENDPOINT = "/employers"
 private const val EMPLOYER_ENDPOINT = "$EMPLOYERS_ENDPOINT/{id}"
-private const val JOBS_ENDPOINT = "/jobs/{id}"
+private const val JOBS_ENDPOINT = "/jobs"
+private const val JOB_ENDPOINT = "$JOBS_ENDPOINT/{id}"
 private const val EXPRESSION_OF_INTEREST_ENDPOINT = "/jobs/{jobId}/expressions-of-interest/{prisonNumber}"
 
 @ConditionalOnIntegrationEnabled
@@ -29,6 +30,7 @@ class JobsBoardApiWebClient(
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
     val employerResponseTypeRef = typeReference<GetEmployersResponse>()
+    val jobResponseTypeRef = typeReference<GetJobsResponse>()
   }
 
   override fun getEmployer(id: String): Employer? {
@@ -51,7 +53,7 @@ class JobsBoardApiWebClient(
         it.path(EMPLOYERS_ENDPOINT).queryParam("page", page).queryParam("size", pageSize).build()
       }.accept(APPLICATION_JSON).retrieve()
       .bodyToMono(employerResponseTypeRef)
-      .onErrorResume(WebClientResponseException.NotFound::class.java) { error ->
+      .onErrorResume(WebClientResponseException::class.java) { error ->
         val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
         log.warn("Fail to retrieve employers. errorResponse={}", errorResponse)
         Mono.empty()
@@ -61,13 +63,27 @@ class JobsBoardApiWebClient(
   override fun getJob(id: String): Job? {
     log.debug("Getting job details with id={}", id)
     return jobsBoardWebClient
-      .get().uri(JOBS_ENDPOINT, id).accept(APPLICATION_JSON).retrieve()
+      .get().uri(JOB_ENDPOINT, id).accept(APPLICATION_JSON).retrieve()
       .bodyToMono(GetJobResponse::class.java)
       .onErrorResume(WebClientResponseException.NotFound::class.java) { error ->
         val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
         log.warn("Job not found. jobId={}; errorResponse={}", id, errorResponse)
         Mono.empty()
       }.block()?.job()
+  }
+
+  override fun getAllJobs(page: Int, pageSize: Int): GetJobsResponse {
+    log.debug("Getting all jobs; page={}, pageSize={}", page, pageSize)
+    return jobsBoardWebClient
+      .get().uri {
+        it.path(JOBS_ENDPOINT).queryParam("page", page).queryParam("size", pageSize).build()
+      }.accept(APPLICATION_JSON).retrieve()
+      .bodyToMono(jobResponseTypeRef)
+      .onErrorResume(WebClientResponseException::class.java) { error ->
+        val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
+        log.warn("Fail to retrieve jobs. errorResponse={}", errorResponse)
+        Mono.empty()
+      }.block()!!
   }
 
   override fun createExpressionOfInterest(expressionOfInterest: ExpressionOfInterest): Unit = expressionOfInterest.let {
