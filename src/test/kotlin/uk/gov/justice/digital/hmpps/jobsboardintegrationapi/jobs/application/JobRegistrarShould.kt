@@ -1,12 +1,15 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.application
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.InjectMocks
 import org.mockito.kotlin.any
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerExternalId
@@ -25,9 +28,14 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefDa
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.SALARY_PERIOD
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.WORK_PATTERN
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application.ServiceTestCase
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.EventData
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.JobsBoardApiClient
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateJobRequest
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.GetJobsData
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.GetJobsResponse
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNJob
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.UpdateJobRequest
+import kotlin.math.min
 import kotlin.test.assertFailsWith
 
 class JobRegistrarShould : ServiceTestCase() {
@@ -194,6 +202,93 @@ class JobRegistrarShould : ServiceTestCase() {
         with(cause!!) {
           assertThat(message).isEqualTo(expectedException.message)
         }
+      }
+    }
+  }
+
+  @Nested
+  @DisplayName("Given some missing jobs to be created")
+  inner class GivenMissingJobsToCreate {
+    private val allJobs = listOf(tescoWarehouseHandler, amazonForkliftOperator, abcConstructionApprentice)
+    private val missingJobIds = listOf(tescoWarehouseHandler, amazonForkliftOperator).map { it.id }.toSet()
+
+    @Test
+    fun `discover and resend missing jobs`() {
+      givenJobsToResend()
+      givenMissingJobs()
+
+      var sentCount: Long
+      var totalCount: Long
+      jobRegistrar.discoverAndResend().run {
+        sentCount = first
+        totalCount = second
+      }
+
+      assertEquals(allJobs.size.toLong(), totalCount)
+      assertEquals(missingJobIds.size.toLong(), sentCount)
+      verify(eventEmitter, times(missingJobIds.size)).send(any<EventData>())
+      verify(jobsBoardApiClient).getAllJobs(0, FETCH_SIZE)
+    }
+
+    @Test
+    fun `discover and resend missing jobs, with paginated results`() {
+      val fetchSize = 2
+      givenJobsToResend(fetchSize)
+      givenMissingJobs()
+
+      val sentCount = jobRegistrar.discoverAndResend(fetchSize).run { first }
+
+      assertEquals(missingJobIds.size.toLong(), sentCount)
+      verify(eventEmitter, times(2)).send(any<EventData>())
+      repeat(2) { page -> verify(jobsBoardApiClient).getAllJobs(page, fetchSize) }
+    }
+
+    @Test
+    fun `discover and resend missing jobs, with paginated results (single record per page)`() {
+      val fetchSize = 1
+      givenJobsToResend(fetchSize)
+      givenMissingJobs()
+
+      val sentCount = jobRegistrar.discoverAndResend(fetchSize).run { first }
+
+      assertEquals(missingJobIds.size.toLong(), sentCount)
+      verify(eventEmitter, times(2)).send(any<EventData>())
+      repeat(3) { page -> verify(jobsBoardApiClient).getAllJobs(page, fetchSize) }
+    }
+
+    @Test
+    fun `resend jobs, with given job IDs`() {
+      val jobIds = (missingJobIds + abcConstructionApprentice.id).toList()
+      givenMissingJobs()
+
+      val sentCount = jobRegistrar.resend(jobIds)
+
+      assertEquals(missingJobIds.size, sentCount)
+    }
+
+    @Test
+    fun `resend jobs, with given job IDs forcing update`() {
+      val jobIds = allJobs.map { it.id }
+      givenMissingJobs()
+
+      val sentCount = jobRegistrar.resend(jobIds, forceUpdate = true)
+
+      assertEquals(jobIds.size, sentCount)
+    }
+
+    private fun givenJobsToResend() = givenAllJobs(allJobs)
+    private fun givenJobsToResend(pageSize: Int) = givenAllJobs(allJobs, pageSize)
+    private fun givenMissingJobs() = allJobs.forEachIndexed { i, it ->
+      if (missingJobIds.contains(it.id)) givenJobExternalIDNotExist(it.id) else givenJobExternalIDExists(it.id, i + 1L)
+    }
+
+    private fun givenAllJobs(jobs: List<Job>, pageSize: Int = JobsBoardApiClient.FETCH_SIZE) {
+      val totalCount = jobs.size
+      whenever(jobsBoardApiClient.getAllJobs(anyInt(), anyInt())).thenAnswer {
+        val page = it.arguments.first() as Int
+        val range = (page * pageSize).let { offset -> IntRange(offset, min(offset + pageSize, totalCount) - 1) }
+        val items = jobs.slice(range).map { GetJobsData.from(it) }.toTypedArray()
+        GetJobsResponse.from(*items, number = page, size = pageSize, totalElements = totalCount.toLong())
       }
     }
   }
