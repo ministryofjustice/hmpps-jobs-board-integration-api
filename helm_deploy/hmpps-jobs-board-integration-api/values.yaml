@@ -24,6 +24,10 @@ generic-service:
           deny all;
           return 401;
         }
+        location /integration-admin/resend-jobs {
+          deny all;
+          return 401;
+        }
 
   # Environment variables to load into the deployment
   env:
