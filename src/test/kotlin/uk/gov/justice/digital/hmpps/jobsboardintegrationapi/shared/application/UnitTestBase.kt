@@ -45,6 +45,7 @@ abstract class UnitTestBase {
   internal open fun setUpBase() {
     lenient().whenever(uuidGenerator.generate()).thenReturn(UUID.randomUUID().toString())
     lenient().whenever(timeProvider.nowAsInstant()).thenReturn(defaultCurrentTime)
+    lenient().whenever(timeProvider.now()).thenReturn(defaultCurrentLocalTime)
   }
 
   protected fun randomUUID() = UUID.randomUUID().toString()

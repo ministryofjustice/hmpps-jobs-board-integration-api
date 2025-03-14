@@ -224,13 +224,24 @@ class JobRegistrar(
     var totalSentCount = 0
     if (ids.isNotEmpty()) {
       log.debug("Resending jobs|sending with these IDs: {}", ids)
-      ids.map { id -> makeEventForJob(id, eventType) }.toTypedArray().let { events ->
+      val jobIdsToSent = if (eventType == JOB_CREATED) excludePastJobs(ids) else ids
+      jobIdsToSent.map { id -> makeEventForJob(id, eventType) }.toTypedArray().let { events ->
         log.debug("Sending events {}", events)
         sendEvent(*events).let { sentCount -> totalSentCount += sentCount }
       }
     }
     return totalSentCount
   }
+
+  /**
+   * Exclude past jobs: only include rolling job or otherwise with closing date after today
+   */
+  private fun excludePastJobs(ids: List<String>) = runBlocking {
+    val today = timeProvider.now().toLocalDate()
+    ids.map { id -> async(Dispatchers.IO) { jobsBoardApiClient.getJob(id) } }.awaitAll()
+      .filterNotNull().filter { it.isRollingOpportunity || (it.closingDate?.isAfter(today) ?: true) }
+      .map { it.id }
+  }.also { log.debug("Resending jobs|sending with these (filtered) IDs: {}", it) }
 
   private fun makeEventForJob(
     jobId: String,
@@ -254,9 +265,9 @@ class JobRegistrar(
       }
     }
 
-    val results = sendTasks.awaitAll().toList()
-    val completedIds = results.mapNotNull { it.first }.toList()
-    val errors = results.mapNotNull { it.second }.toList()
+    val results = sendTasks.awaitAll()
+    val completedIds = results.mapNotNull { it.first }
+    val errors = results.mapNotNull { it.second }
     if (errors.isNotEmpty()) {
       errors.groupingBy { it.message }.eachCount()
         .map { "Error: ${it.key}, count: ${it.value}" }.joinToString(separator = ";")

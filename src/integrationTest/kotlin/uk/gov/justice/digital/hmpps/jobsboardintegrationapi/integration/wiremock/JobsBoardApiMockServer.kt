@@ -94,6 +94,8 @@ class JobsBoardApiMockServer : WireMockServer(8092) {
     )
   }
 
+  fun stubRetrieveJob(jobs: List<Job>) = jobs.forEach { stubRetrieveJob(it) }
+
   fun stubRetrieveJobNotFound() {
     stubFor(
       get(urlPathMatching(JOB_PATH_REGEX))
@@ -105,6 +107,7 @@ class JobsBoardApiMockServer : WireMockServer(8092) {
   }
 
   // stubbing retrieve all jobs
+  fun stubRetrieveAllJobs(jobs: List<Job>) = stubRetrieveAllJobs(jobs.getJobsResponse())
   fun stubRetrieveAllJobs(vararg job: Job) = stubRetrieveAllJobs(job.getJobsResponse())
 
   fun stubRetrieveAllJobs(page: Int, pageSize: Int, totalElements: Long, vararg job: Job) = job.map { GetJobsData.from(it) }.toTypedArray()
