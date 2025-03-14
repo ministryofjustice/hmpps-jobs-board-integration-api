@@ -16,6 +16,8 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.config.SqsTestConfig
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.Job
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobExternalId
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobExternalIdRepository
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.INTEGRATION_QUEUE_ID
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.MissingQueueException
@@ -28,6 +30,9 @@ import java.time.Duration
 abstract class ApplicationTestCase : IntegrationTestBase() {
   @Autowired
   protected lateinit var employerExternalIdRepository: EmployerExternalIdRepository
+
+  @Autowired
+  protected lateinit var jobExternalIdRepository: JobExternalIdRepository
 
   @Autowired
   protected lateinit var hmppsQueueService: HmppsQueueService
@@ -51,6 +56,10 @@ abstract class ApplicationTestCase : IntegrationTestBase() {
       deleteAll()
       flush()
     }
+    jobExternalIdRepository.run {
+      deleteAll()
+      flush()
+    }
   }
 
   protected fun givenEmployerExternalIds(employerIds: List<String>) = givenEmployerExternalIds(*employerIds.toTypedArray())
@@ -60,6 +69,14 @@ abstract class ApplicationTestCase : IntegrationTestBase() {
     employerExternalIdRepository.save(EmployerExternalId(id, extId))
     extId
   }.also { employerExternalIdRepository.flush() }.last()
+
+  protected fun givenJobExternalIds(jobIds: List<String>) = givenJobExternalIds(*jobIds.toTypedArray())
+
+  protected fun givenJobExternalIds(vararg jobIds: String) = jobIds.mapIndexed { index, id ->
+    val extId = index + 1L
+    jobExternalIdRepository.save(JobExternalId(id, extId))
+    extId
+  }.also { jobExternalIdRepository.flush() }.last()
 
   protected fun awaitIntegrationQueue(messageCount: Int = 0) {
     await untilCallTo { integrationQueueMessageCount() } matches { it == messageCount }

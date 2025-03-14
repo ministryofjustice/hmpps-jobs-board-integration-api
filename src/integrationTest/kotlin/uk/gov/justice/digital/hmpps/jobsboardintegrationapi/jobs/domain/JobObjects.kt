@@ -355,7 +355,8 @@ internal fun String.asJson(): String = mapper.writeValueAsString(this)
 
 internal fun List<Int>.asStringList() = joinToString(separator = ",", prefix = "[", postfix = "]")
 
-internal fun Job.mnJob(employerExtId: Long = 1L) = MNJob(
+internal fun Job.mnJob(employerExtId: Long = 1L, extId: Long = 1L) = MNJob(
+  id = extId,
   jobTitle = title,
   jobDescription = description,
   postingDate = startDate?.toString(),
