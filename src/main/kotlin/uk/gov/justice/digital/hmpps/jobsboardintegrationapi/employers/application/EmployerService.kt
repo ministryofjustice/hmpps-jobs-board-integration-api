@@ -84,9 +84,9 @@ class EmployerService(
       }
     }
 
-    val results = sendTasks.awaitAll().toList()
-    val completedIds = results.mapNotNull { it.first }.toList()
-    val errors = results.mapNotNull { it.second }.toList()
+    val results = sendTasks.awaitAll()
+    val completedIds = results.mapNotNull { it.first }
+    val errors = results.mapNotNull { it.second }
     if (errors.isNotEmpty()) {
       errors.groupingBy { it.message }.eachCount()
         .map { "Error: ${it.key}, count: ${it.value}" }.joinToString(separator = ";")
