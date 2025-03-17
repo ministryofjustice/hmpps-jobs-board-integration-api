@@ -45,7 +45,7 @@ internal object JobObjects {
     offenceExclusions = "CASE_BY_CASE,OTHER",
     offenceExclusionsDetails = null,
     howToApply = "How to applyHow to apply",
-    closingDate = null,
+    closingDate = LocalDate.of(2025, 1, 1),
     startDate = null,
     isRollingOpportunity = false,
     isOnlyForPrisonLeavers = true,
@@ -132,7 +132,7 @@ internal object JobObjects {
     howToApply = "How to applyHow to apply",
     closingDate = null,
     startDate = null,
-    isRollingOpportunity = false,
+    isRollingOpportunity = true,
     isOnlyForPrisonLeavers = true,
     supportingDocumentationRequired = "DISCLOSURE_LETTER,OTHER",
     supportingDocumentationDetails = null,
@@ -355,7 +355,8 @@ internal fun String.asJson(): String = mapper.writeValueAsString(this)
 
 internal fun List<Int>.asStringList() = joinToString(separator = ",", prefix = "[", postfix = "]")
 
-internal fun Job.mnJob(employerExtId: Long = 1L) = MNJob(
+internal fun Job.mnJob(employerExtId: Long = 1L, extId: Long = 1L) = MNJob(
+  id = extId,
   jobTitle = title,
   jobDescription = description,
   postingDate = startDate?.toString(),
