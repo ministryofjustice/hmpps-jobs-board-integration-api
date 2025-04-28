@@ -10,4 +10,20 @@
         <packageUrl regex="true">^pkg:javascript/DOMPurify@.*$</packageUrl>
         <vulnerabilityName>CVE-2025-26791</vulnerabilityName>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Suppression for false alarm on Swagger Parser wrongly matching Nexus
+        swagger-parser-core-2.1.26.jar (pkg:maven/io.swagger.parser.v3/swagger-parser-core@2.1.26, cpe:2.3:a:project-nexus_project:project-nexus:2.1.26:*:*:*:*:*:*:*, cpe:2.3:a:sonatype:nexus:2.1.26:*:*:*:*:*:*:*) : CVE-2019-7238, CVE-2020-10199, CVE-2020-10204, CVE-2020-10203
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.swagger\.parser\.v3/swagger\-parser\-core@.*$</packageUrl>
+        <cpe>cpe:/a:sonatype:nexus</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+        Suppression for false alarm on Swagger Parser wrongly matching Nexus
+        swagger-parser-v3-2.1.26.jar (pkg:maven/io.swagger.parser.v3/swagger-parser-v3@2.1.26, cpe:2.3:a:project-nexus_project:project-nexus:2.1.26:*:*:*:*:*:*:*, cpe:2.3:a:sonatype:nexus:2.1.26:*:*:*:*:*:*:*) : CVE-2019-7238, CVE-2020-10199, CVE-2020-10204, CVE-2020-10203
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.swagger\.parser\.v3/swagger\-parser\-v3@.*$</packageUrl>
+        <cpe>cpe:/a:sonatype:nexus</cpe>
+    </suppress>
 </suppressions>
