@@ -5,9 +5,9 @@ info.app:
 spring:
   application:
     name: hmpps-jobs-board-integration-api
-  codec:
-    max-in-memory-size: 10MB
-
+  http:
+    codecs:
+      max-in-memory-size: 10MB
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
     serialization:
@@ -38,6 +38,7 @@ spring:
       local:
         - "dev"
         - "localstack"
+        - "meganexus"
 
   jpa:
     open-in-view: false

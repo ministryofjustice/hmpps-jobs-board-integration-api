@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.JobsBoardApiExtension.Companion.jobsBoardApi
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.MNJobBoardApiExtension.Companion.mnJobBoardApi
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.MnAuthApiExtension.Companion.mnAuth
 import kotlin.test.Test
 
 class ResendEmployersPutShould : ResendDataTestCase() {
@@ -27,6 +28,7 @@ class ResendEmployersPutShould : ResendDataTestCase() {
   override fun setUp() {
     super.setUp()
     this.purgeIntegrationQueues()
+    mnAuth.stubGrantToken()
   }
 
   @AfterEach

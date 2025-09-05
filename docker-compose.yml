@@ -16,7 +16,10 @@ services:
       - SPRING_PROFILES_ACTIVE=dev,local
       - API_BASE_URL_JOBSBOARD=https://jobs-board-api-dev.hmpps.service.justice.gov.uk
       - API_BASE_URL_MNJOBBOARD=https://testservices.sequation.net/sequation-job-api
-      - MN_JOBBOARD_API_TOKEN=<OVERRIDE_THIS>
+      - MN_AUTH_URL=https://testservices.sequation.net/sequation-authentication-api
+      - MN_AUTH_USERNAME=<OVERRIDE_THIS>
+      - MN_AUTH_PASSWORD=<OVERRIDE_THIS>
+      - MN_AUTH_APPID=<OVERRIDE_THIS>
       - API_CLIENT_ID=<OVERRIDE_THIS>
       - API_CLIENT_SECRET=<OVERRIDE_THIS>
 

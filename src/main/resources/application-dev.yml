@@ -1,6 +1,9 @@
 hmpps-auth:
   url: "http://localhost:8090/auth"
 
+mn-auth:
+  url: "https://testservices.sequation.net/sequation-authentication-api"
+
 api:
   base.url:
     jobsboard: "https://jobs-board-api-dev.hmpps.service.justice.gov.uk"

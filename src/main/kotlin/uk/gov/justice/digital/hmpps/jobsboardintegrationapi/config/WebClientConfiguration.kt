@@ -1,14 +1,18 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.netty.handler.logging.LogLevel
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import reactor.netty.transport.logging.AdvancedByteBufFormat
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNAuthAuthorizedClientManager
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNAuthOAuth2AccessTokenResponseClient
 import uk.gov.justice.hmpps.kotlin.auth.authorisedWebClient
 import uk.gov.justice.hmpps.kotlin.auth.healthWebClient
 import java.time.Duration
@@ -33,24 +37,26 @@ class WebClientConfiguration(
   fun jobsBoardWebClient(
     authorizedClientManager: OAuth2AuthorizedClientManager,
     builder: WebClient.Builder,
-  ): WebClient = builder.apply {
-    if (clientLogging) it.clientConnector(clientConnectorWithLogging())
-  }.authorisedWebClient(
-    authorizedClientManager,
-    registrationId = "hmpps-jobs-board-api",
-    url = jobsboardApiBaseUri,
-    timeout,
-  )
+  ): WebClient = builder.clientLogging()
+    .authorisedWebClient(authorizedClientManager, registrationId = "hmpps-jobs-board-api", url = jobsboardApiBaseUri, timeout)
 
   @ConditionalOnIntegrationEnabled
   @Bean
   fun mnJobBoardWebClient(
+    clientRegistrationRepository: ClientRegistrationRepository,
+    objectMapper: ObjectMapper,
     builder: WebClient.Builder,
     @Value("\${api.base.url.mnjobboard}") mnjobboardApiBaseUri: String,
-    @Value("\${mn.jobboard.api.token}") mnJobBoardToken: String,
-  ): WebClient = builder.defaultHeader("Authorization", "Bearer $mnJobBoardToken").baseUrl(mnjobboardApiBaseUri).apply {
-    if (clientLogging) it.clientConnector(clientConnectorWithLogging())
-  }.build()
+    @Value("\${mn-auth.app-id}") appId: Long,
+  ): WebClient = builder.clientLogging().authorisedWebClient(
+    authorizedClientManager = MNAuthAuthorizedClientManager(
+      clientRegistrationRepository,
+      mnAuthApiClient = MNAuthOAuth2AccessTokenResponseClient(objectMapper, appId, clientLogging),
+    ),
+    registrationId = "mn-job-board-api",
+    url = mnjobboardApiBaseUri,
+    timeout = timeout,
+  )
 
   private fun clientConnectorWithLogging() = ReactorClientHttpConnector(httpClientWireTapLogging())
 
@@ -59,4 +65,8 @@ class WebClientConfiguration(
     LogLevel.DEBUG,
     AdvancedByteBufFormat.TEXTUAL,
   )
+
+  private fun WebClient.Builder.clientLogging() = apply {
+    if (clientLogging) it.clientConnector(clientConnectorWithLogging())
+  }
 }

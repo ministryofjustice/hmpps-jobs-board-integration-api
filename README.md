@@ -49,3 +49,8 @@ in Intellij.
 * supply required env var, e.g.
   * `spring.profiles.active`=`dev`
   * `SPRING_PROFILES_ACTIVE`=`local`
+  * `MN_AUTH_USERNAME`
+  * `MN_AUTH_PASSWORD`
+  * `MN_AUTH_APPID`
+  * `API_CLIENT_ID`
+  * `API_CLIENT_SECRET`
