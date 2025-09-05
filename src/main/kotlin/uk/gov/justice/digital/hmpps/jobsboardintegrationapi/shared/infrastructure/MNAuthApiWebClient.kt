@@ -138,7 +138,15 @@ class MNAuthOAuth2AccessTokenResponseClient(
     headers.let { it.getFirst(it.accessControlExposeHeaders.first()) }
       .ifEmpty { throw IllegalArgumentException("Bearer Token is missing") }
       .let { bearerToken -> tokenParser.parseAccessToken(bearerToken) }
-      .let { accessToken -> accessToken.run { OAuth2AccessTokenResponse.withToken(tokenValue).tokenType(tokenType).build() } }
+      .let { accessToken ->
+        accessToken.run {
+          OAuth2AccessTokenResponse
+            .withToken(tokenValue)
+            .tokenType(tokenType)
+            .expiresIn(Duration.between(Instant.now(), expiresAt).seconds)
+            .build()
+        }
+      }
   }
 
   private fun authException(ex: Throwable) = OAuth2Error(
@@ -182,7 +190,8 @@ class MNAuthOAuth2AccessTokenResponseClient(
       val jwt = objectMapper.readValue(payload, MNAuthToken::class.java)
         .also { log.trace("jwt = {}", it) }
 
-      jwt.run { OAuth2AccessToken(tokenType, tokenValue, Instant.ofEpochMilli(created), Instant.ofEpochSecond(exp)) }
+      jwt.run { OAuth2AccessToken(tokenType, tokenValue, Instant.ofEpochMilli(created), Instant.ofEpochSecond(exp), setOf("read")) }
+        .also { log.trace("Access token will be expiring at = {}", it.expiresAt) }
     }
   }
 }
