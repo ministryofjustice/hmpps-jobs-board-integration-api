@@ -181,17 +181,13 @@ class MNAuthOAuth2AccessTokenResponseClient(
     ): OAuth2AccessToken = tokenValue.split(".").let { parts ->
       require(parts.size == 3, { "Invalid token value: $tokenValue" })
 
-      val payload = String(decoder.decode(parts[1]))
-      if (log.isTraceEnabled) {
-        val header = String(decoder.decode(parts[0]))
-        log.trace("decodeToken()|header={}, token={} |tokenType={}", header, payload, tokenType)
-      }
-
-      val jwt = objectMapper.readValue(payload, MNAuthToken::class.java)
-        .also { log.trace("jwt = {}", it) }
-
-      jwt.run { OAuth2AccessToken(tokenType, tokenValue, Instant.ofEpochMilli(created), Instant.ofEpochSecond(exp), setOf("read")) }
-        .also { log.trace("Access token will be expiring at = {}", it.expiresAt) }
+      String(decoder.decode(parts[1]))
+        .let { payload -> objectMapper.readValue(payload, MNAuthToken::class.java) }
+        .let { jwt ->
+          val issuedAt = Instant.ofEpochMilli(jwt.created)
+          val expiresAt = Instant.ofEpochSecond(jwt.exp)
+          OAuth2AccessToken(tokenType, tokenValue, issuedAt, expiresAt)
+        }.also { log.trace("Access token will be expiring at = {}", it.expiresAt) }
     }
   }
 }
