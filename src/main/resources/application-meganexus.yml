@@ -1,0 +1,15 @@
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          mn-auth:
+            token-uri: ${mn-auth.url}/systemlogin
+
+        registration:
+          mn-job-board-api:
+            provider: mn-auth
+            client-id: ${mn-auth.username}
+            client-secret: ${mn-auth.password}
+            authorization-grant-type: client_credentials
+            scope: read,write

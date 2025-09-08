@@ -6,11 +6,20 @@ generic-service:
     host: jobs-board-integration-api.hmpps.service.justice.gov.uk
 
   env:
+    SPRING_PROFILES_ACTIVE: "meganexus"
     HMPPS_AUTH_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
+    MN_AUTH_URL: "https://liveservices.sequation.com/sequation-authentication-api"
     API_BASE_URL_JOBSBOARD: "https://jobs-board-api.hmpps.service.justice.gov.uk"
     API_BASE_URL_MNJOBBOARD: "https://liveservices.sequation.net/sequation-job-api"   # URL to be confirmed
+    API_INTEGRATION_ENABLED: false
 
   serviceAccountName: education-skills-and-work-live-prod
+
+  namespace_secrets:
+    hmpps-jobs-board-integration-api:
+      MN_AUTH_USERNAME: "MN_AUTH_USERNAME"
+      MN_AUTH_PASSWORD: "MN_AUTH_PASSWORD"
+      MN_AUTH_APPID: "MN_AUTH_APPID"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts

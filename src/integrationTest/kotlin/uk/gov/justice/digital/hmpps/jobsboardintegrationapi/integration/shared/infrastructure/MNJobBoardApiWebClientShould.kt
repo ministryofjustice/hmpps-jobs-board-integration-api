@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.shared.infrastructure
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -9,6 +10,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Emp
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.mnEmployer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.MNJobBoardApiExtension.Companion.mnJobBoardApi
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.MnAuthApiExtension.Companion.mnAuth
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.tescoWarehouseHandler
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.mnJob
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.CreateEmployerRequest
@@ -29,6 +31,11 @@ class MNJobBoardApiWebClientShould : IntegrationTestBase() {
 
   private val job = tescoWarehouseHandler
   private val mnJob: MNJob get() = job.copy(createdAt = timeProvider.nowAsInstant()).mnJob()
+
+  @BeforeEach
+  fun mockToken() {
+    mnAuth.stubGrantToken()
+  }
 
   @Nested
   @DisplayName("MN JobBoard `POST` /employers ; create employer")
