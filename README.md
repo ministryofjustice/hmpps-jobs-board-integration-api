@@ -51,6 +51,6 @@ in Intellij.
   * `SPRING_PROFILES_ACTIVE`=`local`
   * `MN_AUTH_USERNAME`
   * `MN_AUTH_PASSWORD`
-  * `MN_AUTH_APPID`
+  * `MN_AUTH_APP_ID`
   * `API_CLIENT_ID`
   * `API_CLIENT_SECRET`

@@ -19,7 +19,7 @@ services:
       - MN_AUTH_URL=https://testservices.sequation.net/sequation-authentication-api
       - MN_AUTH_USERNAME=<OVERRIDE_THIS>
       - MN_AUTH_PASSWORD=<OVERRIDE_THIS>
-      - MN_AUTH_APPID=<OVERRIDE_THIS>
+      - MN_AUTH_APP_ID=<OVERRIDE_THIS>
       - API_CLIENT_ID=<OVERRIDE_THIS>
       - API_CLIENT_SECRET=<OVERRIDE_THIS>
 
