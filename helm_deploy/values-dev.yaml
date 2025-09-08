@@ -25,7 +25,7 @@ generic-service:
     hmpps-jobs-board-integration-api:
       MN_AUTH_USERNAME: "MN_AUTH_USERNAME"
       MN_AUTH_PASSWORD: "MN_AUTH_PASSWORD"
-      MN_AUTH_APPID: "MN_AUTH_APPID"
+      MN_AUTH_APP_ID: "MN_AUTH_APP_ID"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
