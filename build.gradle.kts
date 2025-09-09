@@ -39,7 +39,7 @@ testing {
     register<JvmTestSuite>("integrationTest") {
       dependencies {
         kotlin.target.compilations { named("integrationTest") { associateWith(getByName("main")) } }
-        implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.5.0")
+        implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.6.0")
         implementation("org.wiremock:wiremock-standalone:3.13.1")
         implementation("io.swagger.parser.v3:swagger-parser-v3:2.1.31") {
           exclude(group = "io.swagger.core.v3")
