@@ -11,7 +11,7 @@ generic-service:
     MN_AUTH_URL: "https://liveservices.sequation.com/sequation-authentication-api"
     API_BASE_URL_JOBSBOARD: "https://jobs-board-api.hmpps.service.justice.gov.uk"
     API_BASE_URL_MNJOBBOARD: "https://liveservices.sequation.com/sequation-job-api"   # URL to be confirmed
-    API_INTEGRATION_ENABLED: false
+    API_INTEGRATION_ENABLED: true
 
   serviceAccountName: education-skills-and-work-live-prod
 
