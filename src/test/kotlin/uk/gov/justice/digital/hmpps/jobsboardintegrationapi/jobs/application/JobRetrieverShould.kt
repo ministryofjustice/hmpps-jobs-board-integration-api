@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.nationalTescoWarehouseHandler
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.tescoWarehouseHandler
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application.ServiceTestCase
 import kotlin.test.assertFailsWith
@@ -15,6 +16,17 @@ class JobRetrieverShould : ServiceTestCase() {
   @Test
   fun `return valid job`() {
     val job = tescoWarehouseHandler
+    val jobId = job.id
+    whenever(jobsBoardApiClient.getJob(jobId)).thenReturn(job)
+
+    val actualJob = jobRetriever.retrieve(jobId)
+
+    assertThat(actualJob).isEqualTo(job)
+  }
+
+  @Test
+  fun `return valid national job`() {
+    val job = nationalTescoWarehouseHandler
     val jobId = job.id
     whenever(jobsBoardApiClient.getJob(jobId)).thenReturn(job)
 

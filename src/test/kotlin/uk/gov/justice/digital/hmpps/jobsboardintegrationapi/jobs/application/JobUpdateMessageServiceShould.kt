@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.Job
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobEvent
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobEventType
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.amazonForkliftOperator
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.nationalTescoWarehouseHandler
 import kotlin.test.assertFailsWith
 
 @ExtendWith(MockitoExtension::class)
@@ -79,6 +80,35 @@ class JobUpdateMessageServiceShould : JobMessageServiceTestCase() {
       val causeOfException = RuntimeException("Error updating job at MN")
 
       throwsExceptionWhenRegisteringUpdate(causeOfException, job)
+    }
+  }
+
+  @Nested
+  @DisplayName("Given an existing national job")
+  inner class GivenExistingNationalJob {
+    private val job = nationalTescoWarehouseHandler
+
+    @BeforeEach
+    internal fun setUp() {
+      whenever(jobRetriever.retrieve(job.id)).thenReturn(job)
+    }
+
+    @Test
+    fun `receive and handle the event of Job Update`() {
+      val jobId = job.id
+      val jobEvent = jobUpdateEvent(jobId)
+
+      updateService.handleMessage(jobEvent.toIntegrationEvent(), jobEvent.messageAttributes())
+
+      argumentCaptor<String>().let { captor ->
+        verify(jobRetriever).retrieve(captor.capture())
+        assertEquals(jobId, captor.firstValue)
+      }
+
+      argumentCaptor<Job>().let { captor ->
+        verify(jobRegistrar).registerUpdate(captor.capture())
+        assertEquals(job, captor.firstValue)
+      }
     }
   }
 

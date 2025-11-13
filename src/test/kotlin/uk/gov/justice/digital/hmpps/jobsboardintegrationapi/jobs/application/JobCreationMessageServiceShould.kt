@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.Job
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobEvent
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobEventType
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.abcConstructionApprentice
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.nationalTescoWarehouseHandler
 import kotlin.test.assertFailsWith
 
 @ExtendWith(MockitoExtension::class)
@@ -36,6 +37,35 @@ class JobCreationMessageServiceShould : JobMessageServiceTestCase() {
   @DisplayName("Given a new job")
   inner class GivenANewJob {
     private val job = abcConstructionApprentice
+
+    @BeforeEach
+    internal fun setUp() {
+      whenever(jobRetriever.retrieve(job.id)).thenReturn(job)
+    }
+
+    @Test
+    fun `receive and handle the event of Job Creation`() {
+      val jobId = job.id
+      val jobEvent = jobCreationEvent(jobId)
+
+      creationService.handleMessage(jobEvent.toIntegrationEvent(), jobEvent.messageAttributes())
+
+      argumentCaptor<String>().let { captor ->
+        verify(jobRetriever).retrieve(captor.capture())
+        assertEquals(jobId, captor.firstValue)
+      }
+
+      argumentCaptor<Job>().let { captor ->
+        verify(jobRegistrar).registerCreation(captor.capture())
+        assertEquals(job, captor.firstValue)
+      }
+    }
+  }
+
+  @Nested
+  @DisplayName("Given a new national job")
+  inner class GivenANewNationalJob {
+    private val job = nationalTescoWarehouseHandler
 
     @BeforeEach
     internal fun setUp() {

@@ -52,6 +52,41 @@ internal object JobObjects {
     employer = tesco,
   )
 
+  val nationalTescoWarehouseHandler = Job(
+    id = "04295747-e60d-4e51-9716-e721a63bdd06",
+    title = "Warehouse handler",
+    sector = "WAREHOUSING",
+    industrySector = "LOGISTICS",
+    numberOfVacancies = 1,
+    sourcePrimary = "DWP",
+    sourceSecondary = null,
+    charityName = null,
+    postcode = "NE15 7LR",
+    salaryFrom = 1_234_567.12,
+    salaryTo = 7_654_321.12,
+    salaryPeriod = "PER_DAY",
+    additionalSalaryInformation = null,
+    isPayingAtLeastNationalMinimumWage = true,
+    workPattern = "FLEXIBLE_SHIFTS",
+    contractType = "TEMPORARY",
+    hoursPerWeek = "FULL_TIME_40_PLUS",
+    baseLocation = "HYBRID",
+    essentialCriteria = "Essential job criteria",
+    desirableCriteria = null,
+    description = "Job description\r\nDescribe the role and main tasks. Include any benefits and training opportunities.",
+    offenceExclusions = "CASE_BY_CASE,OTHER",
+    offenceExclusionsDetails = null,
+    howToApply = "How to applyHow to apply",
+    closingDate = LocalDate.of(2025, 1, 1),
+    startDate = null,
+    isRollingOpportunity = false,
+    isOnlyForPrisonLeavers = true,
+    supportingDocumentationRequired = "DISCLOSURE_LETTER,OTHER",
+    supportingDocumentationDetails = null,
+    employer = tesco,
+    isNational = true,
+  )
+  
   val amazonForkliftOperator = Job(
     id = "d3035924-f9fe-426f-b253-f7c8225167ae",
     title = "Forklift operator",
@@ -213,7 +248,7 @@ class JobBuilder {
   var sourcePrimary: String = "PEL"
   var sourceSecondary: String? = null
   var charityName: String? = null
-  var postcode: String = "LS11 5AD"
+  var postcode: String? = "LS11 5AD"
   var salaryFrom: Double = 96.32
   var salaryTo: Double? = null
   var salaryPeriod: String = "PER_DAY"
@@ -244,6 +279,7 @@ class JobBuilder {
     sector = "RETAIL",
     status = "SILVER",
   )
+  var isNational: Boolean = false
 
   fun withId(id: String): JobBuilder {
     this.id = id
@@ -305,6 +341,7 @@ class JobBuilder {
     }.toMutableMap()
     this.employerId = job.employerId
     this.employer = job.employer?.run { Employer(id, name, description, sector, status) }
+    this.isNational = job.isNational
     return this
   }
 
@@ -341,6 +378,7 @@ class JobBuilder {
     supportingDocumentationDetails = this.supportingDocumentationDetails,
     employerId = this.employerId,
     expressionsOfInterest = this.expressionsOfInterest,
+    isNational = this.isNational,
   ).also { job ->
     job.expressionsOfInterest.forEach { (_, eoi) -> eoi.job = job }
     this.employer?.let { job.employer = this.employer }

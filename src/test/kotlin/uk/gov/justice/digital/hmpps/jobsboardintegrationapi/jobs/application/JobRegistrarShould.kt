@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.Job
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobExternalId
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.abcConstructionApprentice
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.amazonForkliftOperator
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.nationalTescoWarehouseHandler
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.tescoWarehouseHandler
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.mnJob
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.refdata.domain.RefData.BASE_LOCATION
@@ -116,6 +117,25 @@ class JobRegistrarShould : ServiceTestCase() {
   }
 
   @Nested
+  @DisplayName("Given a new national job to be created at MN")
+  inner class GivenANationalJobToCreate {
+    private val job = nationalTescoWarehouseHandler
+    private val jobExtId = 1L
+    private val employerExtId = 1001L
+    private val mnJob = job.mnJob(employerExtId, jobExtId)
+    private val mnJobNoId = mnJob.copy(id = null)
+
+    @Test
+    fun `register new job`() {
+      givenAJobToCreate(job, mnJobNoId, mnJob)
+
+      jobRegistrar.registerCreation(job)
+
+      verify(jobExternalIdRepository).save(JobExternalId(job.id, jobExtId))
+    }
+  }
+
+  @Nested
   @DisplayName("Given an invalid job")
   inner class GivenInvalidJobToCreate {
     @Test
@@ -205,6 +225,25 @@ class JobRegistrarShould : ServiceTestCase() {
           assertThat(message).isEqualTo(expectedException.message)
         }
       }
+    }
+  }
+
+  @Nested
+  @DisplayName("Given an existing national job to be updated to MN")
+  inner class GivenANationalJobToUpdate {
+    private val job = nationalTescoWarehouseHandler.run { copy(description = "$description |updated") }
+    private val employerExternalId = 2002L
+    private val externalId = 101L
+    private val mnJob = job.mnJob(employerExternalId, externalId)
+    private val updateJobRequest = UpdateJobRequest.from(mnJob)
+
+    @Test
+    fun `update a registered job`() {
+      givenAJobToUpdate(job, mnJob)
+
+      jobRegistrar.registerUpdate(job)
+
+      verify(mnJobBoardApiClient).updateJob(updateJobRequest)
     }
   }
 
