@@ -86,7 +86,7 @@ internal object JobObjects {
     employer = tesco,
     isNational = true,
   )
-  
+
   val amazonForkliftOperator = Job(
     id = "d3035924-f9fe-426f-b253-f7c8225167ae",
     title = "Forklift operator",
