@@ -279,7 +279,6 @@ data class MNJob(
   val desirableJobCriteria: String? = null,
   val essentialJobCriteria: String,
   val howToApply: String,
-  val isNational: Boolean = false,
 )
 
 data class MNExcludingOffences(
