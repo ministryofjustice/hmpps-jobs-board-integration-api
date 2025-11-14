@@ -13,7 +13,7 @@ data class Job(
   val sourcePrimary: String,
   val sourceSecondary: String? = null,
   val charityName: String? = null,
-  val postcode: String,
+  val postcode: String? = null,
   val salaryFrom: Double,
   val salaryTo: Double? = null,
   val salaryPeriod: String,
@@ -40,6 +40,7 @@ data class Job(
   val expressionsOfInterest: MutableMap<String, ExpressionOfInterest> = mutableMapOf(),
 
   var createdAt: Instant? = null,
+  val isNational: Boolean = false,
 ) {
   private var _employer: Employer? = null
 
@@ -52,7 +53,7 @@ data class Job(
     sourcePrimary: String,
     sourceSecondary: String? = null,
     charityName: String? = null,
-    postcode: String,
+    postcode: String? = null,
     salaryFrom: Double,
     salaryTo: Double? = null,
     salaryPeriod: String,
@@ -77,6 +78,7 @@ data class Job(
     employer: Employer,
     expressionsOfInterest: MutableMap<String, ExpressionOfInterest> = mutableMapOf(),
     createdAt: Instant? = null,
+    isNational: Boolean = false,
   ) : this(
     id = id,
     title = title,
@@ -111,6 +113,7 @@ data class Job(
     employerId = employer.id,
     expressionsOfInterest = expressionsOfInterest,
     createdAt = createdAt,
+    isNational = isNational,
   ) {
     this.employer = employer
   }
@@ -157,6 +160,7 @@ data class Job(
         employer=$employer,
         expressionsOfInterest=$expressionsOfInterest,
         createdAt=$createdAt,
+        isNational=$isNational,
     )
   """.trimIndent()
 }

@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.getJobsResponse
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.abcConstructionApprentice
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.amazonForkliftOperator
+import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.nationalTescoWarehouseHandler
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobObjects.tescoWarehouseHandler
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.GetEmployerResponse
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.GetJobsData
@@ -146,7 +147,7 @@ class JobsBoardApiWebClientShould : ApplicationTestCase() {
   @DisplayName("JobsBoard `GET` /jobs")
   inner class JobsRetrieveAllEndpoint {
     private val someJobs =
-      arrayOf(tescoWarehouseHandler, amazonForkliftOperator, abcConstructionApprentice).map { it.makeCopy() }.toTypedArray()
+      arrayOf(tescoWarehouseHandler, amazonForkliftOperator, abcConstructionApprentice, nationalTescoWarehouseHandler).map { it.makeCopy() }.toTypedArray()
 
     @Test
     fun `return all jobs`() {

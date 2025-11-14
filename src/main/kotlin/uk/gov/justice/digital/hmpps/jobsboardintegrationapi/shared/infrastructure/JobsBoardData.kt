@@ -48,7 +48,7 @@ data class GetJobResponse(
   val sourcePrimary: String,
   val sourceSecondary: String? = null,
   val charityName: String? = null,
-  val postCode: String,
+  val postCode: String? = null,
   val salaryFrom: Double,
   val salaryTo: Double? = null,
   val salaryPeriod: String,
@@ -71,6 +71,7 @@ data class GetJobResponse(
   val supportingDocumentationRequired: List<String>? = null,
   val supportingDocumentationDetails: String? = null,
   val createdAt: String,
+  val isNational: Boolean = false,
 ) {
   companion object {
     fun from(job: Job): GetJobResponse = GetJobResponse(
@@ -106,6 +107,7 @@ data class GetJobResponse(
       supportingDocumentationRequired = job.supportingDocumentationRequired?.asList(),
       supportingDocumentationDetails = job.supportingDocumentationDetails,
       createdAt = job.createdAt.toString(),
+      isNational = job.isNational,
     )
 
     private fun String.asList(): List<String> = this.split(",").map { it.trim() }.toList()
@@ -144,6 +146,7 @@ data class GetJobResponse(
     supportingDocumentationDetails = supportingDocumentationDetails,
     employerId = employerId,
     createdAt = instant(createdAt),
+    isNational = isNational,
   )
 
   private fun localDate(date: String?) = date?.let { LocalDate.parse(it) }
