@@ -9,8 +9,8 @@ configurations {
 }
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.7.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.11") {
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.8.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.1") {
     implementation("org.apache.commons:commons-lang3:3.18.0")
   }
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -39,7 +39,7 @@ testing {
     register<JvmTestSuite>("integrationTest") {
       dependencies {
         kotlin.target.compilations { named("integrationTest") { associateWith(getByName("main")) } }
-        implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.7.0")
+        implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.8.1")
         implementation("org.wiremock:wiremock-standalone:3.13.1")
         implementation("io.swagger.parser.v3:swagger-parser-v3:2.1.31") {
           exclude(group = "io.swagger.core.v3")
