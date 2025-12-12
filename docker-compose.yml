@@ -24,7 +24,7 @@ services:
       - API_CLIENT_SECRET=<OVERRIDE_THIS>
 
   hmpps-auth:
-    image: quay.io/hmpps/hmpps-auth:latest
+    image: ghcr.io/ministryofjustice/hmpps-auth:latest
     networks:
       - hmpps
     container_name: integration-hmpps-auth
