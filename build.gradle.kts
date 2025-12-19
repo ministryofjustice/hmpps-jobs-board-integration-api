@@ -8,6 +8,8 @@ configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
 }
 
+ext["netty.version"] = "4.1.129.Final"
+
 dependencies {
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.8.1")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.6.1") {
