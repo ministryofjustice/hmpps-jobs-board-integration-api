@@ -89,11 +89,11 @@ class MNAuthOAuth2AccessTokenResponseClient(
     try {
       log.debug("Retrieving access token")
       return this.restClient.post().uri(grantRequest.getClientRegistration().getProviderDetails().getTokenUri())
-        .headers({ h -> h.putAll(this.headersConverter.convert(grantRequest)!!) })
-        .body(this.parametersConverter.convert(grantRequest)!!)
+        .headers({ h -> h.putAll(this.headersConverter.convert(grantRequest)) })
+        .body(this.parametersConverter.convert(grantRequest))
         .retrieve()
         .toBodilessEntity()
-        .run { responseConverter.convert(headers) }!!
+        .run { responseConverter.convert(headers) }
         .also { log.debug("Retrieved access token successfully! token's expiresAt is {}", it.accessToken.expiresAt) }
     } catch (ex: RestClientException) {
       log.error("Failed to retrieve access token: {}", ex.message)
@@ -112,7 +112,7 @@ class MNAuthOAuth2AccessTokenResponseClient(
       .requestFactory(requestFactory).build()
   }
 
-  private fun mnHeadersConverter() = Converter<OAuth2ClientCredentialsGrantRequest, HttpHeaders> { grantRequest ->
+  private fun mnHeadersConverter() = Converter<OAuth2ClientCredentialsGrantRequest, HttpHeaders> {
     HttpHeaders().apply {
       contentType = APPLICATION_JSON_UTF8
       accept = ACCEPT_ALL
