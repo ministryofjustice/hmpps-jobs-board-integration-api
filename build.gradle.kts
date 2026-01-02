@@ -14,6 +14,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
+  implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
 
@@ -54,7 +55,6 @@ testing {
         implementation("org.awaitility:awaitility-kotlin")
 
         implementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
-        implementation("org.springframework.boot:spring-boot-starter-webclient-test")
         implementation("org.springframework.boot:spring-boot-webtestclient")
       }
 

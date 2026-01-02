@@ -10,7 +10,6 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace.NONE
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
-import org.springframework.boot.webclient.test.autoconfigure.AutoConfigureWebClient
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
@@ -42,7 +41,6 @@ import java.util.*
   MockitoExtension::class,
 )
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-@AutoConfigureWebClient
 @AutoConfigureWebTestClient
 @AutoConfigureTestDatabase(replace = NONE)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
