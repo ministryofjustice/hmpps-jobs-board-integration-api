@@ -9,10 +9,8 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpInputMessage
 import org.springframework.http.MediaType
 import org.springframework.http.client.ReactorClientHttpRequestFactory
-import org.springframework.http.converter.FormHttpMessageConverter
-import org.springframework.http.converter.GenericHttpMessageConverter
 import org.springframework.http.converter.HttpMessageConverter
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager
 import org.springframework.security.oauth2.client.ClientCredentialsOAuth2AuthorizedClientProvider
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService
@@ -69,7 +67,7 @@ class MNAuthOAuth2AccessTokenResponseClient(
   private val tokenParser = TokenParser()
   private var headersConverter: Converter<OAuth2ClientCredentialsGrantRequest, HttpHeaders>
   private var parametersConverter: Converter<OAuth2ClientCredentialsGrantRequest, MNAuthGrantRequest>
-  private var jsonMessageConverter: GenericHttpMessageConverter<Any?>
+  private var jsonMessageConverter: HttpMessageConverter<Any>
   private var responseConverter: Converter<HttpHeaders, OAuth2AccessTokenResponse>
 
   private var restClient: RestClient
@@ -81,7 +79,7 @@ class MNAuthOAuth2AccessTokenResponseClient(
   init {
     headersConverter = mnHeadersConverter()
     parametersConverter = mnParametersConverter()
-    jsonMessageConverter = MappingJackson2HttpMessageConverter()
+    jsonMessageConverter = JacksonJsonHttpMessageConverter()
     responseConverter = mnAuthResponseConverter()
 
     restClient = mnRestClient()
@@ -91,11 +89,11 @@ class MNAuthOAuth2AccessTokenResponseClient(
     try {
       log.debug("Retrieving access token")
       return this.restClient.post().uri(grantRequest.getClientRegistration().getProviderDetails().getTokenUri())
-        .headers({ h -> h.putAll(this.headersConverter.convert(grantRequest)!!) })
-        .body(this.parametersConverter.convert(grantRequest)!!)
+        .headers({ h -> h.putAll(this.headersConverter.convert(grantRequest)) })
+        .body(this.parametersConverter.convert(grantRequest))
         .retrieve()
         .toBodilessEntity()
-        .run { responseConverter.convert(headers) }!!
+        .run { responseConverter.convert(headers) }
         .also { log.debug("Retrieved access token successfully! token's expiresAt is {}", it.accessToken.expiresAt) }
     } catch (ex: RestClientException) {
       log.error("Failed to retrieve access token: {}", ex.message)
@@ -107,17 +105,14 @@ class MNAuthOAuth2AccessTokenResponseClient(
     val requestFactory = (if (!clientLogging) ReactorClientHttpRequestFactory() else ReactorClientHttpRequestFactory(httpClientWireTapLogging()))
       .apply { setReadTimeout(timeout) }
 
-    return RestClient.builder()
-      .messageConverters { messageConverters: MutableList<HttpMessageConverter<*>?> ->
-        messageConverters.clear()
-        messageConverters.add(FormHttpMessageConverter())
-        messageConverters.add(jsonMessageConverter)
-      }
+    return RestClient.builder().configureMessageConverters {
+      it.addCustomConverter(jsonMessageConverter)
+    }
       .defaultStatusHandler(OAuth2ErrorResponseErrorHandler().apply { setErrorConverter(MNAuthErrorResponseConverter()) })
       .requestFactory(requestFactory).build()
   }
 
-  private fun mnHeadersConverter() = Converter<OAuth2ClientCredentialsGrantRequest, HttpHeaders> { grantRequest ->
+  private fun mnHeadersConverter() = Converter<OAuth2ClientCredentialsGrantRequest, HttpHeaders> {
     HttpHeaders().apply {
       contentType = APPLICATION_JSON_UTF8
       accept = ACCEPT_ALL
@@ -135,7 +130,7 @@ class MNAuthOAuth2AccessTokenResponseClient(
   }
 
   private fun mnAuthResponseConverter() = Converter<HttpHeaders, OAuth2AccessTokenResponse> { headers ->
-    headers.let { it.getFirst(it.accessControlExposeHeaders.first()) }
+    headers.let { it.getFirst(it.accessControlExposeHeaders.first()) ?: "" }
       .ifEmpty { throw IllegalArgumentException("Bearer Token is missing") }
       .let { bearerToken -> tokenParser.parseAccessToken(bearerToken) }
       .let { accessToken ->

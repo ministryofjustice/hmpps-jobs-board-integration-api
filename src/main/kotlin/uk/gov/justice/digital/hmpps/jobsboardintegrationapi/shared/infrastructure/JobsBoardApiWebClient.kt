@@ -24,7 +24,7 @@ private const val EXPRESSION_OF_INTEREST_ENDPOINT = "/jobs/{jobId}/expressions-o
 @ConditionalOnIntegrationEnabled
 @Service
 class JobsBoardApiWebClient(
-  @Qualifier("jobsBoardWebClient") private val jobsBoardWebClient: WebClient,
+  @param:Qualifier("jobsBoardWebClient") private val jobsBoardWebClient: WebClient,
 ) : JobsBoardApiClient {
 
   companion object {
@@ -39,8 +39,7 @@ class JobsBoardApiWebClient(
       .get().uri(EMPLOYER_ENDPOINT, id).accept(APPLICATION_JSON).retrieve()
       .bodyToMono(GetEmployerResponse::class.java)
       .onErrorResume(WebClientResponseException.NotFound::class.java) { error ->
-        val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
-        log.warn("Employer not found. employerId={}; errorResponse={}", id, errorResponse)
+        log.warn("Employer not found. employerId={}; errorResponse={}", id, error.responseBodyAsString)
         Mono.empty()
       }.block()?.employer()
       .also { log.trace("Employer details: id={}, details={}", id, it) }
@@ -54,8 +53,7 @@ class JobsBoardApiWebClient(
       }.accept(APPLICATION_JSON).retrieve()
       .bodyToMono(employerResponseTypeRef)
       .onErrorResume(WebClientResponseException::class.java) { error ->
-        val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
-        log.warn("Fail to retrieve employers. errorResponse={}", errorResponse)
+        log.warn("Fail to retrieve employers. errorResponse={}", error.responseBodyAsString)
         Mono.empty()
       }.block()!!
   }
@@ -66,8 +64,7 @@ class JobsBoardApiWebClient(
       .get().uri(JOB_ENDPOINT, id).accept(APPLICATION_JSON).retrieve()
       .bodyToMono(GetJobResponse::class.java)
       .onErrorResume(WebClientResponseException.NotFound::class.java) { error ->
-        val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
-        log.warn("Job not found. jobId={}; errorResponse={}", id, errorResponse)
+        log.warn("Job not found. jobId={}; errorResponse={}", id, error.responseBodyAsString)
         Mono.empty()
       }.block()?.job()
   }
@@ -80,8 +77,7 @@ class JobsBoardApiWebClient(
       }.accept(APPLICATION_JSON).retrieve()
       .bodyToMono(jobResponseTypeRef)
       .onErrorResume(WebClientResponseException::class.java) { error ->
-        val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
-        log.warn("Fail to retrieve jobs. errorResponse={}", errorResponse)
+        log.warn("Fail to retrieve jobs. errorResponse={}", error.responseBodyAsString)
         Mono.empty()
       }.block()!!
   }
@@ -102,4 +98,4 @@ class JobsBoardApiWebClient(
   }
 }
 
-inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
+inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T & Any>() {}
