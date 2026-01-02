@@ -66,8 +66,7 @@ class JobsBoardApiWebClient(
       .get().uri(JOB_ENDPOINT, id).accept(APPLICATION_JSON).retrieve()
       .bodyToMono(GetJobResponse::class.java)
       .onErrorResume(WebClientResponseException.NotFound::class.java) { error ->
-        val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
-        log.warn("Job not found. jobId={}; errorResponse={}", id, errorResponse)
+        log.warn("Job not found. jobId={}; errorResponse={}", id, error.responseBodyAsString)
         Mono.empty()
       }.block()?.job()
   }
@@ -80,8 +79,7 @@ class JobsBoardApiWebClient(
       }.accept(APPLICATION_JSON).retrieve()
       .bodyToMono(jobResponseTypeRef)
       .onErrorResume(WebClientResponseException::class.java) { error ->
-        val errorResponse = if (error is WebClientResponseException) error.responseBodyAsString else null
-        log.warn("Fail to retrieve jobs. errorResponse={}", errorResponse)
+        log.warn("Fail to retrieve jobs. errorResponse={}", error.responseBodyAsString)
         Mono.empty()
       }.block()!!
   }
@@ -102,4 +100,4 @@ class JobsBoardApiWebClient(
   }
 }
 
-inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T>() {}
+inline fun <reified T> typeReference() = object : ParameterizedTypeReference<T & Any>() {}

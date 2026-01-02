@@ -10,8 +10,9 @@ spring:
       max-in-memory-size: 10MB
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
+    datatype:
+      datetime:
+        WRITE_DATES_AS_TIMESTAMPS: false
 
   # TODO: This security section can be removed if your service doesn't call out to other services
   security:

@@ -39,12 +39,12 @@ abstract class JobsBoardApiWebClientTestBase : UnitTestBase() {
     whenever(requestUriMock.uri(uri, id)).thenReturn(requestHeadersMock)
   }
 
-  protected fun <T> replyOnRequestById(elementClass: Class<T>, response: T & Any, uri: String, id: String) {
+  protected fun <T> replyOnRequestById(elementClass: Class<T & Any>, response: T & Any, uri: String, id: String) {
     onRequestById(uri, id)
     whenever(responseSpecMock.bodyToMono(elementClass)).thenReturn(Mono.just(response))
   }
 
-  protected fun <T> replyOnPagedRequest(typeReference: ParameterizedTypeReference<T>, response: T & Any, uri: String, page: Int = 0, pageSize: Int = FETCH_SIZE) {
+  protected fun <T> replyOnPagedRequest(typeReference: ParameterizedTypeReference<T & Any>, response: T & Any, uri: String, page: Int = 0, pageSize: Int = FETCH_SIZE) {
     onRequest()
     whenever(requestUriMock.uri(any<Function<UriBuilder, URI>>())).thenReturn(requestHeadersMock)
     whenever(responseSpecMock.bodyToMono(typeReference)).thenReturn(Mono.just(response))
