@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.netty.handler.logging.LogLevel
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -30,6 +29,7 @@ import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
 import reactor.netty.http.client.HttpClient
 import reactor.netty.transport.logging.AdvancedByteBufFormat
+import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.MNApiError
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.MNAuthApiClient
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.MNAuthClientManager
@@ -59,7 +59,7 @@ class MNAuthAuthorizedClientManager(
 }
 
 class MNAuthOAuth2AccessTokenResponseClient(
-  private val objectMapper: ObjectMapper,
+  private val jsonMapper: JsonMapper,
   private val appId: Long,
   private val clientLogging: Boolean = false,
   private val timeout: Duration = Duration.ofSeconds(DEFAULT_TIMEOUT_SECONDS),
@@ -177,7 +177,7 @@ class MNAuthOAuth2AccessTokenResponseClient(
       require(parts.size == 3, { "Invalid token value: $tokenValue" })
 
       String(decoder.decode(parts[1]))
-        .let { payload -> objectMapper.readValue(payload, MNAuthToken::class.java) }
+        .let { payload -> jsonMapper.readValue(payload, MNAuthToken::class.java) }
         .let { jwt ->
           val issuedAt = Instant.ofEpochMilli(jwt.created)
           val expiresAt = Instant.ofEpochSecond(jwt.exp)

@@ -28,8 +28,8 @@ class JobUpdateMessageServiceShould : JobMessageServiceTestCase() {
 
   @BeforeEach
   internal fun setUp() {
-    whenever(mockedObjectMapper.readValue(anyString(), eq(JobEvent::class.java))).thenAnswer {
-      objectMapper.readValue(it.arguments[0] as String, JobEvent::class.java)
+    whenever(mockedJsonMapper.readValue(anyString(), eq(JobEvent::class.java))).thenAnswer {
+      jsonMapper.readValue(it.arguments[0] as String, JobEvent::class.java)
     }
   }
 
