@@ -36,9 +36,9 @@ abstract class UnitTestBase {
       .build()
   }
 
-  protected val defaultTimeZoneOffset = ZoneOffset.UTC
+  protected val defaultTimeZoneOffset = ZoneOffset.UTC!!
   protected val defaultTimeZone: ZoneId = defaultTimeZoneOffset
-  protected val defaultCurrentLocalTime = LocalDateTime.of(2025, 1, 1, 1, 1, 1)
+  protected val defaultCurrentLocalTime = LocalDateTime.of(2025, 1, 1, 1, 1, 1)!!
   protected val defaultCurrentTime: Instant by lazy { defaultCurrentLocalTime.atZone(defaultTimeZone).toInstant() }
 
   @BeforeEach
