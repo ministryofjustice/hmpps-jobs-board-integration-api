@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
@@ -27,9 +26,9 @@ abstract class UnitTestBase {
   protected lateinit var uuidGenerator: UUIDGenerator
 
   @Mock
-  protected lateinit var mockedObjectMapper: ObjectMapper
+  protected lateinit var mockedJsonMapper: JsonMapper
 
-  protected val objectMapper: JsonMapper by lazy {
+  protected val jsonMapper: JsonMapper by lazy {
     JsonMapper.builder()
       .addModule(KotlinModule.Builder().build())
       .configure(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS, false)

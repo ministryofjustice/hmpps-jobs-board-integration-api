@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.DisplayName
@@ -13,6 +12,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.IntegrationMessageService
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.HmppsMessage
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.HmppsMessageEventType
@@ -102,8 +102,8 @@ class HmppsMessageServiceShould : HmppsMessageServiceTestCase() {
   }
 
   private fun wheneverParseJsonOfHmppsMessage() {
-    whenever(mockedObjectMapper.readValue(anyString(), eq(HmppsMessage::class.java)))
-      .thenAnswer { objectMapper.readValue(it.arguments[0].toString(), HmppsMessage::class.java) }
+    whenever(mockedJsonMapper.readValue(anyString(), eq(HmppsMessage::class.java)))
+      .thenAnswer { jsonMapper.readValue(it.arguments[0].toString(), HmppsMessage::class.java) }
   }
 
   private fun makeHmppsMessage() = EXPRESSION_OF_INTEREST_CREATED.let { eventType ->
@@ -119,7 +119,7 @@ class HmppsMessageServiceShould : HmppsMessageServiceTestCase() {
   }
 }
 
-private class DummyHmppsMessageService(objectMapper: ObjectMapper) : HmppsMessageServiceBase(EXPRESSION_OF_INTEREST_CREATED, objectMapper) {
+private class DummyHmppsMessageService(jsonMapper: JsonMapper) : HmppsMessageServiceBase(EXPRESSION_OF_INTEREST_CREATED, jsonMapper) {
 
   override fun handleHmppsMessage(hmppsMessage: HmppsMessage, eventType: HmppsMessageEventType) {
     dummyHandle(hmppsMessage, eventType)
@@ -128,7 +128,7 @@ private class DummyHmppsMessageService(objectMapper: ObjectMapper) : HmppsMessag
   fun dummyHandle(hmppsMessage: HmppsMessage, eventType: HmppsMessageEventType) {}
 }
 
-private class EmptyHmppsMessageService(objectMapper: ObjectMapper) : HmppsMessageServiceBase(emptySet(), objectMapper) {
+private class EmptyHmppsMessageService(jsonMapper: JsonMapper) : HmppsMessageServiceBase(emptySet(), jsonMapper) {
   override fun handleHmppsMessage(hmppsMessage: HmppsMessage, eventType: HmppsMessageEventType) {
     fail<Unit>("This should be unreachable!")
   }
