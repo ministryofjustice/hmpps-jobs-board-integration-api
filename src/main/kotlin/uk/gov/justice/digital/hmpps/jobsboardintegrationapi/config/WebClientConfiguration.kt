@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.netty.handler.logging.LogLevel
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -10,7 +11,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import reactor.netty.transport.logging.AdvancedByteBufFormat
-import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNAuthAuthorizedClientManager
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.MNAuthOAuth2AccessTokenResponseClient
 import uk.gov.justice.hmpps.kotlin.auth.authorisedWebClient
@@ -44,14 +44,14 @@ class WebClientConfiguration(
   @Bean
   fun mnJobBoardWebClient(
     clientRegistrationRepository: ClientRegistrationRepository,
-    jsonMapper: JsonMapper,
+    objectMapper: ObjectMapper,
     builder: WebClient.Builder,
     @Value("\${api.base.url.mnjobboard}") mnjobboardApiBaseUri: String,
     @Value("\${mn-auth.app-id}") appId: Long,
   ): WebClient = builder.clientLogging().authorisedWebClient(
     authorizedClientManager = MNAuthAuthorizedClientManager(
       clientRegistrationRepository,
-      mnAuthApiClient = MNAuthOAuth2AccessTokenResponseClient(jsonMapper, appId, clientLogging),
+      mnAuthApiClient = MNAuthOAuth2AccessTokenResponseClient(objectMapper, appId, clientLogging),
     ),
     registrationId = "mn-job-board-api",
     url = mnjobboardApiBaseUri,

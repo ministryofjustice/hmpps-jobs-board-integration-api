@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.post
@@ -11,8 +13,6 @@ import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
-import tools.jackson.databind.json.JsonMapper
-import tools.jackson.module.kotlin.jsonMapper
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.MNAuthToken
 import java.security.KeyPair
 import java.security.SecureRandom
@@ -24,7 +24,7 @@ private const val URL_PREFIX = "/mn-auth"
 private const val TOKEN_URI = "$URL_PREFIX/systemlogin"
 
 class MnAuthMockServer : WireMockServer(WIREMOCK_PORT) {
-  private val mapper: JsonMapper
+  private val mapper: ObjectMapper
 
   private val encoder: Base64.Encoder
   private val jwtSigningKey: KeyPair
@@ -34,7 +34,7 @@ class MnAuthMockServer : WireMockServer(WIREMOCK_PORT) {
   }
 
   init {
-    mapper = jsonMapper()
+    mapper = jacksonObjectMapper()
     encoder = Base64.getUrlEncoder()
     jwtSigningKey = Jwts.SIG.RS512.keyPair().build()
   }

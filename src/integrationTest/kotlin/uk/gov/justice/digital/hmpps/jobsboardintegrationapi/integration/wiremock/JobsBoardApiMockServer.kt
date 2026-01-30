@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.containing
@@ -11,8 +13,6 @@ import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
-import tools.jackson.databind.json.JsonMapper
-import tools.jackson.module.kotlin.jsonMapper
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Employer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.integration.wiremock.JobsBoardApiMockServer.Companion.mapper
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.Job
@@ -135,7 +135,7 @@ class JobsBoardApiMockServer : WireMockServer(8092) {
     private const val JOB_PATH_REGEX = "/jobs/[a-zA-Z0-9\\-]*"
     private const val JOBS_PATH_REGEX = "/jobs[?.+]*"
 
-    internal val mapper: JsonMapper = jsonMapper()
+    internal val mapper: ObjectMapper = jacksonObjectMapper()
   }
 }
 

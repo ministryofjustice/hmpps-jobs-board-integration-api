@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.application
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEvent
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEventType
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerEventType.EMPLOYER_CREATED
@@ -13,11 +13,11 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructur
 
 abstract class EmployerMessageService(
   employerEventTypes: Set<EmployerEventType>,
-  protected val jsonMapper: JsonMapper,
+  protected val objectMapper: ObjectMapper,
 ) : IntegrationMessageService {
-  constructor(employerEventType: EmployerEventType, jsonMapper: JsonMapper) : this(
+  constructor(employerEventType: EmployerEventType, objectMapper: ObjectMapper) : this(
     setOf(employerEventType),
-    jsonMapper,
+    objectMapper,
   )
 
   protected val eventTypeTypes: Set<String> by lazy { employerEventTypes.map { it.type }.toSet() }
@@ -41,14 +41,14 @@ abstract class EmployerMessageService(
 
   protected abstract fun handleEvent(employerEvent: EmployerEvent)
 
-  private fun IntegrationEvent.toEmployerEvent(): EmployerEvent = jsonMapper.readValue(message, EmployerEvent::class.java)
+  private fun IntegrationEvent.toEmployerEvent(): EmployerEvent = objectMapper.readValue(message, EmployerEvent::class.java)
 }
 
 class EmployerCreationMessageService(
   private val retriever: EmployerRetriever,
   private val registrar: EmployerRegistrar,
-  jsonMapper: JsonMapper,
-) : EmployerMessageService(EMPLOYER_CREATED, jsonMapper) {
+  objectMapper: ObjectMapper,
+) : EmployerMessageService(EMPLOYER_CREATED, objectMapper) {
 
   private companion object {
     private val log: Logger = LoggerFactory.getLogger(this::class.java)
@@ -69,8 +69,8 @@ class EmployerCreationMessageService(
 class EmployerUpdateMessageService(
   private val retriever: EmployerRetriever,
   private val registrar: EmployerRegistrar,
-  jsonMapper: JsonMapper,
-) : EmployerMessageService(EMPLOYER_UPDATED, jsonMapper) {
+  objectMapper: ObjectMapper,
+) : EmployerMessageService(EMPLOYER_UPDATED, objectMapper) {
 
   private companion object {
     private val log: Logger = LoggerFactory.getLogger(this::class.java)

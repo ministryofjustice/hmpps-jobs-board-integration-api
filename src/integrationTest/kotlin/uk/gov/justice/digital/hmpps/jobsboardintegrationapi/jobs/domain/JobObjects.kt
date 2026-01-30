@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain
 
-import tools.jackson.databind.json.JsonMapper
-import tools.jackson.module.kotlin.jsonMapper
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.Employer
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.abcConstruction
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.domain.EmployerObjects.amazon
@@ -390,7 +390,7 @@ class JobBuilder {
   }
 }
 
-private val mapper: JsonMapper = jsonMapper()
+private val mapper: ObjectMapper = jacksonObjectMapper()
 
 internal fun String.asJson(): String = mapper.writeValueAsString(this)
 

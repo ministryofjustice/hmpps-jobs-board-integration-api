@@ -14,7 +14,7 @@ abstract class HmppsMessageServiceTestCase : UnitTestBase() {
   protected fun HmppsMessage.integrationEvent(eventTypeAttribute: String? = null) = IntegrationEvent(
     eventId = messageId,
     eventType = eventTypeAttribute ?: eventType.type,
-    message = jsonMapper.writeValueAsString(this),
+    message = objectMapper.writeValueAsString(this),
   )
 
   protected fun HmppsMessage.integrationMessageAttributes() = this.messageAttributes["eventType"]

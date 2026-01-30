@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.application.EmployerCreationMessageService
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.application.EmployerRegistrar
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.employers.application.EmployerRetriever
@@ -47,35 +47,35 @@ class IntegrationConfiguration {
   fun employerCreationMessageService(
     retriever: EmployerRetriever,
     registrar: EmployerRegistrar,
-    jsonMapper: JsonMapper,
-  ) = EmployerCreationMessageService(retriever, registrar, jsonMapper)
+    objectMapper: ObjectMapper,
+  ) = EmployerCreationMessageService(retriever, registrar, objectMapper)
 
   @Bean
   fun employerUpdateMessageService(
     retriever: EmployerRetriever,
     registrar: EmployerRegistrar,
-    jsonMapper: JsonMapper,
-  ) = EmployerUpdateMessageService(retriever, registrar, jsonMapper)
+    objectMapper: ObjectMapper,
+  ) = EmployerUpdateMessageService(retriever, registrar, objectMapper)
 
   @Bean
   fun jobCreationMessageService(
     retriever: JobRetriever,
     registrar: JobRegistrar,
-    jsonMapper: JsonMapper,
-  ) = JobCreationMessageService(retriever, registrar, jsonMapper)
+    objectMapper: ObjectMapper,
+  ) = JobCreationMessageService(retriever, registrar, objectMapper)
 
   @Bean
   fun jobUpdateMessageService(
     retriever: JobRetriever,
     registrar: JobRegistrar,
-    jsonMapper: JsonMapper,
-  ) = JobUpdateMessageService(retriever, registrar, jsonMapper)
+    objectMapper: ObjectMapper,
+  ) = JobUpdateMessageService(retriever, registrar, objectMapper)
 
   @Bean
   fun expressionOfInterestMessageService(
     expressionOfInterestRegistrar: ExpressionOfInterestRegistrar,
-    jsonMapper: JsonMapper,
-  ) = ExpressionOfInterestMessageService(expressionOfInterestRegistrar, jsonMapper)
+    objectMapper: ObjectMapper,
+  ) = ExpressionOfInterestMessageService(expressionOfInterestRegistrar, objectMapper)
 
   @Bean
   fun integrationMessageListener(

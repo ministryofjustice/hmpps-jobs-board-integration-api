@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.application
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.IntegrationEvent
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.domain.IntegrationMessageService
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructure.HmppsMessage
@@ -11,11 +11,11 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructur
 
 abstract class HmppsMessageServiceBase(
   protected val eventTypes: Set<HmppsMessageEventType>,
-  protected val jsonMapper: JsonMapper,
+  protected val objectMapper: ObjectMapper,
 ) : IntegrationMessageService {
-  constructor(eventType: HmppsMessageEventType, jsonMapper: JsonMapper) : this(
+  constructor(eventType: HmppsMessageEventType, objectMapper: ObjectMapper) : this(
     setOf(eventType),
-    jsonMapper,
+    objectMapper,
   )
 
   private companion object {
@@ -44,5 +44,5 @@ abstract class HmppsMessageServiceBase(
 
   protected abstract fun handleHmppsMessage(hmppsMessage: HmppsMessage, eventType: HmppsMessageEventType)
 
-  private fun IntegrationEvent.hmppsMessage(): HmppsMessage = jsonMapper.readValue(message, HmppsMessage::class.java)
+  private fun IntegrationEvent.hmppsMessage(): HmppsMessage = objectMapper.readValue(message, HmppsMessage::class.java)
 }

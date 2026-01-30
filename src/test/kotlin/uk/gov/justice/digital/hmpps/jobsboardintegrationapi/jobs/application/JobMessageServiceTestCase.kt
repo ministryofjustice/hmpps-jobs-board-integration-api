@@ -18,6 +18,6 @@ abstract class JobMessageServiceTestCase : UnitTestBase() {
   protected fun JobEvent.toIntegrationEvent() = IntegrationEvent(
     eventId = this.eventId,
     eventType = this.eventType.type,
-    message = jsonMapper.writeValueAsString(this),
+    message = objectMapper.writeValueAsString(this),
   )
 }
