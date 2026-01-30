@@ -29,8 +29,8 @@ class ExpressionOfInterestMessageServiceShould : HmppsMessageServiceTestCase() {
 
   @BeforeEach
   internal fun setUp() {
-    whenever(mockedObjectMapper.readValue(anyString(), eq(HmppsMessage::class.java))).thenAnswer {
-      objectMapper.readValue(it.arguments[0] as String, HmppsMessage::class.java)
+    whenever(mockedJsonMapper.readValue(anyString(), eq(HmppsMessage::class.java))).thenAnswer {
+      jsonMapper.readValue(it.arguments[0] as String, HmppsMessage::class.java)
     }
   }
 

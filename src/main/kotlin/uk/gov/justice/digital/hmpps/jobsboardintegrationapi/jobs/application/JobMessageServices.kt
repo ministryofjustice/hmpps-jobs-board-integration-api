@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.application
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobEvent
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobEventType
 import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.jobs.domain.JobEventType.JOB_CREATED
@@ -13,11 +13,11 @@ import uk.gov.justice.digital.hmpps.jobsboardintegrationapi.shared.infrastructur
 
 abstract class JobMessageService(
   jobEventTypes: Set<JobEventType>,
-  protected val objectMapper: ObjectMapper,
+  protected val jsonMapper: JsonMapper,
 ) : IntegrationMessageService {
-  constructor(jobEventType: JobEventType, objectMapper: ObjectMapper) : this(
+  constructor(jobEventType: JobEventType, jsonMapper: JsonMapper) : this(
     setOf(jobEventType),
-    objectMapper,
+    jsonMapper,
   )
 
   protected val eventTypeTypes: Set<String> by lazy { jobEventTypes.map { it.type }.toSet() }
@@ -41,14 +41,14 @@ abstract class JobMessageService(
 
   protected abstract fun handleEvent(jobEvent: JobEvent)
 
-  private fun IntegrationEvent.toJobEvent(): JobEvent = objectMapper.readValue(message, JobEvent::class.java)
+  private fun IntegrationEvent.toJobEvent(): JobEvent = jsonMapper.readValue(message, JobEvent::class.java)
 }
 
 class JobCreationMessageService(
   private val retriever: JobRetriever,
   private val registrar: JobRegistrar,
-  objectMapper: ObjectMapper,
-) : JobMessageService(JOB_CREATED, objectMapper) {
+  jsonMapper: JsonMapper,
+) : JobMessageService(JOB_CREATED, jsonMapper) {
 
   private companion object {
     private val log: Logger = LoggerFactory.getLogger(this::class.java)
@@ -69,8 +69,8 @@ class JobCreationMessageService(
 class JobUpdateMessageService(
   private val retriever: JobRetriever,
   private val registrar: JobRegistrar,
-  objectMapper: ObjectMapper,
-) : JobMessageService(JOB_UPDATED, objectMapper) {
+  jsonMapper: JsonMapper,
+) : JobMessageService(JOB_UPDATED, jsonMapper) {
 
   private companion object {
     private val log: Logger = LoggerFactory.getLogger(this::class.java)
